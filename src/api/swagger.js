@@ -2,7 +2,7 @@ import request from '@/components/util/http/request'
 
 function reqSwagger(url) {
   return new Promise(function(resolve, reject) {
-    request.get(url, {}, response => {
+    request.get(url, {userName: 'aa', password: 'aa'}, response => {
       console.log(response)
       resolve(response.data.arguments)
     })

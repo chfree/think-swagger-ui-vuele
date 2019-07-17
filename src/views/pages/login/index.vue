@@ -21,7 +21,7 @@ import swaggerService from '@/api/swagger'
 export default {
   data() {
     return {
-      swaggerPath: 'http://localhost:8002/v2/api-docs',
+      swaggerPath: '/v2/api-docs',
       loading: false
     }
   },
