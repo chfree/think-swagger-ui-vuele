@@ -1,17 +1,12 @@
 import axios from 'axios'
-import router from '@/router'
 
-function getApiHost() {
-  return '//localhost:8002'
-}
+axios.defaults.baseURL = ''
+axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('token')
+axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
+axios.defaults.withCredentials = true
 
 const http = axios.create({
-  timeout: 120000, // 请求超时时间
-  baseURL: getApiHost(),
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
-  },
   transformRequest: [function(data) {
     let newData = ''
     for (const k in data) {
@@ -22,118 +17,39 @@ const http = axios.create({
     return newData
   }]
 })
-http.interceptors.request.use(setConfig)
 
 const httpJson = axios.create({
-  timeout: 120000, // 请求超时时间
-  baseURL: getApiHost(),
-  withCredentials: true,
   headers: {
     'Content-Type': 'application/json;charset=utf-8'
   }
 })
-httpJson.interceptors.request.use(setConfig)
 
-const httpFile = axios.create({
-  timeout: 120000, // 请求超时时间
-  baseURL: getApiHost(),
-  withCredentials: true
-})
-httpFile.interceptors.request.use(setConfig)
-
-function setConfig(config) {
-  config.headers['ccb-token'] = window.sessionStorage.getItem('token')
-  config.headers['Authorization'] = window.sessionStorage.getItem('token')
-  config.baseURL = getApiHost()
-  return config
-}
-
-function apiAxios(method, url, params, response) {
-  if (!window.sessionStorage.token) {
-    router.push({ name: 'login', path: '/' })
-  }
-  http({
+function apiAxios(method, url, params, success, error) {
+  execRequest(http({
     method: method,
     url: url,
     data: method === 'POST' || method === 'PUT' ? params : null,
     params: method === 'GET' || method === 'DELETE' ? params : null
-  }).then(function(res) {
-    if (commonResolve(res)) {
-      response(res)
-    } else {
-      response(res)
-    }
-  }).catch(function(err) {
-    response(err)
-  })
+  }), success, error)
 }
 
-function commonResolve(res) {
-  if (res.status !== 200) {
-    return false
-  }
-  res.data.ok = res.data.status === '000000000000'
-  if (res.data.status !== '000000000000') {
-    if (res.data.status === '999999999998') {
-      router.push({ name: 'login', path: '/' })
-    } else {
-      var traceId = res.data.traceId
-      if (traceId === null || traceId === undefined || traceId === '') {
-        traceId = res.headers['c-business-id']
-      }
-    }
-    return false
-  }
-  return true
-}
-
-function apiJsonAxios(method, url, params, response) {
-  if (!window.sessionStorage.token) {
-    router.push({ name: 'login', path: '/' })
-  }
-  httpJson({
+function apiJsonAxios(method, url, params, success, error) {
+  execRequest(httpJson({
     method: method,
     url: url,
-    data: method === 'POST' || method === 'PUT' ? params : null,
-    params: method === 'GET' || method === 'DELETE' ? params : null
-  }).then(function(res) {
-    if (commonResolve(res)) {
-      response(res)
-    } else {
-      response(res)
-    }
-  }).catch(function(err) {
-    response(err)
-  })
+    data: params
+  }), success, error)
 }
 
-function apiFileAxios(method, url, params, response, reject, onUploadCallback) {
-  if (!window.sessionStorage.token) {
-    router.push({ name: 'login', path: '/' })
-  }
-  httpFile({
-    method: method,
-    url: url,
-    data: method === 'POST' || method === 'PUT' ? params : null,
-    params: method === 'GET' || method === 'DELETE' ? params : null
-    // 上传附件进度条报错:request.upload.addEventListener is not a function解决方案:
-  // just add the code below to the file node_modules/mockjs/dist/mock.js at line 8308
-  // MockXMLHttpRequest.prototype.upload = xhr.upload;
-    // onUploadProgress: function(processEvent) {
-    //   if (processEvent.lengthComputable) {
-    //     if (onUploadCallback) {
-    //       onUploadCallback(processEvent)
-    //     }
-    //   }
-    // }
-  }).then(function(res) {
-    if (commonResolve(res)) {
-      response(res)
-    } else {
-      reject(res)
-    }
+function execRequest(httpRequest, success, error) {
+  httpRequest.then(function(res) {
+    success(res)
   }).catch(function(err) {
-    reject(err)
+    if (error) {
+      success(err)
+    } else {
+      error(err)
+    }
   })
 }
 
@@ -152,11 +68,5 @@ export default {
   },
   postJson: function(url, params, response) {
     return apiJsonAxios('POST', url, params, response)
-  },
-  postFile: function(url, params, response, reject, onUploadCallback) {
-    return apiFileAxios('POST', url, params, response, reject, onUploadCallback)
-  },
-  getApiHost: function() {
-    return getApiHost()
   }
 }
