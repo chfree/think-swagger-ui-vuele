@@ -19,7 +19,8 @@ function reqAndResolveSwagger(url) {
         store.commit('swaggerPath', url)
         store.commit('swaggerInfo', result)
 
-        resolveMenu()
+        const menus = resolveMenu()
+        result['menus'] = menus
       }
       resolve(result)
     })

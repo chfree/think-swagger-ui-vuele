@@ -1,23 +1,22 @@
 
 <template>
-  <!-- eslint-disable vue/require-component-is-->
-  <component v-bind="linkProps(to)">
+  <component v-bind="linkProps(to,param)">
     <slot/>
   </component>
 </template>
 
 <script>
-// import { validateURL } from '@/utils/validate'
 
 export default {
   props: {
-    to: {type: String, required: true}
+    to: {type: String, required: true},
+    param: {type: Object, required: false}
   },
   methods: {
-    linkProps(url) {
+    linkProps(to, param) {
       return {
         is: 'router-link',
-        to: url
+        to: {path: '/main/index', query: param }
       }
     }
   }

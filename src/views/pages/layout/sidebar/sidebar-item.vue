@@ -1,6 +1,6 @@
 <template>
   <div v-if="!item.hidden" class="menu-wrapper">
-    <app-link  v-if="!item.children" :to="resolvePath(item.path)">
+    <app-link  v-if="!item.children" :param="child.routeParam" :to="resolvePath(item.path)">
       <el-menu-item :index="resolvePath(item.path)" :class="{'submenu-title-noDropdown':!isNest}">
         <item v-if="item" :icon="item.meta.icon||item.meta.icon" :title="item.meta.title" />
       </el-menu-item>
@@ -18,7 +18,7 @@
           :key="child.path"
           :base-path="resolvePath(child.path)"
           class="nest-menu" />
-        <app-link v-else :to="resolvePath(child.path)" :key="child.name">
+        <app-link v-else :to="resolvePath(child.path)" :param="child.routeParam" :key="child.key">
           <el-menu-item :index="resolvePath(child.path)">
             <item v-if="child" :icon="child.meta.icon" :title="child.meta.title" />
           </el-menu-item>
