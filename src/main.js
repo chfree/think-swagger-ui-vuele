@@ -11,9 +11,12 @@ Vue.config.productionTip = false
 
 Vue.use(TennetcnUI)
 
+import store from './store'
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
+  store,
   router,
   render: h => h(App)
 })

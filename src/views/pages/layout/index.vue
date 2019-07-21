@@ -3,7 +3,6 @@
     <topbar />
     <sidebar class="sidebar-container" />
     <div class="main-container">
-      <breadcrumb />
       <app-main />
     </div>
   </div>

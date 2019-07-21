@@ -45,7 +45,8 @@ function execRequest(httpRequest, success, error) {
   httpRequest.then(function(res) {
     success(res)
   }).catch(function(err) {
-    if (error) {
+    console.log(err)
+    if (error || error === undefined) {
       success(err)
     } else {
       error(err)

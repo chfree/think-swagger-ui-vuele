@@ -5,42 +5,38 @@
         <img src="@/assets/logo.png" style="width:40px;height:40px;" />
       </span>
       <span class="title-font">
-        <a href="/#/system/personCenter">think-vue-admin</a>
+        <a href="/#/system/personCenter">SwaggerUI</a>
       </span>
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <i class="fa fa-user" style="font-size:18px;color:#394160;" aria-hidden="true"></i>
-          <span style="font-size:16px;font-weight:800;cursor:pointer;color:#3a46e9">{{ loginInfo.loginName }}</span>
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <el-dropdown-item>
-            <span style="display:block;">个人信息</span>
-          </el-dropdown-item>
-          <el-dropdown-item divided>
-            <span style="display:block;" @click="">登出</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <div class="avatar-container">
+        <tc-button size="small" type="think" @click="openSwaggerInfo">swagger信息</tc-button>
+      </div>
     </el-menu>
+    <tc-dialog loading :title="swaggerInfoDialog.title" :visible.sync="swaggerInfoDialog.show" width="600px" height="400px">
+      <swaggerInfo />
+    </tc-dialog>
   </div>
 </template>
 
 <script>
+import swaggerInfo from './swagger-info'
 export default {
+  components: { swaggerInfo },
   data() {
     return {
-      loginInfo: {
-        loginName: 'admin'
+      swaggerInfoDialog: {
+        show: false,
+        title: 'swagger信息'
       }
     }
   },
   computed: {
-    logo() {
-    }
   },
   created() {
   },
   methods: {
+    openSwaggerInfo() {
+      this.swaggerInfoDialog.show = true
+    }
   }
 }
 </script>

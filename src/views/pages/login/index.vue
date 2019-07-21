@@ -18,6 +18,7 @@
 
 <script>
 import swaggerService from '@/api/swagger'
+
 export default {
   data() {
     return {
@@ -27,10 +28,11 @@ export default {
   },
   methods: {
     login() {
-      swaggerService.reqSwagger(this.swaggerPath).then(result => {
-        console.log(result)
+      swaggerService.reqAndResolveSwagger(this.swaggerPath).then(result => {
+        if (result.swagger !== undefined) {
+          this.$router.push({ path: '/main/index' })
+        }
       })
-      // this.$router.push({ path: '/system/personCenter' })
     }
   }
 }
