@@ -5,7 +5,7 @@
         <img src="@/assets/logo.png" style="width:40px;height:40px;" />
       </span>
       <span class="title-font">
-        <a href="/#/system/personCenter">SwaggerUI</a>
+        <a href="/#/main/index">SwaggerUI</a>
       </span>
       <div class="avatar-container">
         <tc-button size="small" type="think" @click="openSwaggerInfo">swagger信息</tc-button>

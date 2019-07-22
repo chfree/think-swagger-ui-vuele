@@ -16,7 +16,7 @@ export default {
     linkProps(to, param) {
       return {
         is: 'router-link',
-        to: {path: '/main/index', query: param }
+        to: {path: '/swagger/index', query: param }
       }
     }
   }

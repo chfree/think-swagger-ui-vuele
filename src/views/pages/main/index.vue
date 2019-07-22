@@ -1,7 +1,6 @@
 <template>
   <div>
     <h1>index1</h1>
-    <h2>{{this.menus[$route.query.pindex].children[$route.query.index]}}</h2>
   </div>
 </template>
 
