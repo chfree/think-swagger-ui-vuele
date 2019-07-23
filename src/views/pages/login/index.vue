@@ -1,15 +1,30 @@
 <template>
   <div class="login-container">
-    <div class="login-card">
+    <div  v-if="visitMode==='url'" class="login-card">
       <tc-form class="login-form" label-width="120px">
         <div class="title-container">
           <h3 class="title">swagger-ui</h3>
         </div>
         <div class="login-form-content">
-          <tc-form-item label="swagger路径">
-            <tc-input ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
+          <tc-form-item label="swagger路径" style="margin-bottom:50px;">
+            <tc-input style="width:69%" ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
+            <tc-button style="width:30%" type="default" @click="visitMode='json'">JSON模式</tc-button>
           </tc-form-item>
           <tc-button :loading="loading" type="primary" class="loginButton" @click="login">访问</tc-button>
+        </div>
+      </tc-form>
+    </div>
+    <div  v-if="visitMode==='json'" class="login-card">
+      <tc-form class="login-form" label-width="120px">
+        <div class="title-container">
+          <h3 class="title">swagger-ui</h3>
+        </div>
+        <div class="login-form-content">
+          <tc-form-item label="json数据" style="">
+            <tc-input style="width:69%" ref="swaggerJson" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
+            <tc-button style="width:30%" type="default" @click="visitMode='json'">URL模式</tc-button>
+          </tc-form-item>
+          <tc-button :loading="loading" type="primary" class="loginButton" @click="resolve">解析数据</tc-button>
         </div>
       </tc-form>
     </div>
@@ -22,6 +37,7 @@ import swaggerService from '@/api/swagger'
 export default {
   data() {
     return {
+      visitMode: 'url',
       swaggerPath: 'http://localhost:8002/v2/api-docs',
       loading: false
     }
@@ -33,6 +49,8 @@ export default {
           this.$router.push({ path: '/main/index' })
         }
       })
+    },
+    resolve() {
     }
   }
 }
@@ -45,7 +63,7 @@ $bg:#283443;
   height: 100vh;
 }
 $login-card-width:600px;
-$login-card-height:270px;
+$login-card-height:250px;
 .login-card{
   position: absolute;
   width: $login-card-width;
