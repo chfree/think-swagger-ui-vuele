@@ -1,30 +1,34 @@
 <template>
   <div class="login-container">
-    <div  v-if="visitMode==='url'" class="login-card">
+    <div  v-if="visitMode==='url'" class="login-card" :class="{url:visitMode==='url'}">
       <tc-form class="login-form" label-width="120px">
         <div class="title-container">
           <h3 class="title">swagger-ui</h3>
         </div>
         <div class="login-form-content">
           <tc-form-item label="swagger路径" style="margin-bottom:50px;">
-            <tc-input style="width:69%" ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
-            <tc-button style="width:30%" type="default" @click="visitMode='json'">JSON模式</tc-button>
+            <tc-input ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
           </tc-form-item>
-          <tc-button :loading="loading" type="primary" class="loginButton" @click="login">访问</tc-button>
+          <el-button-group class="loginButton">
+            <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>
+            <tc-button style="width:50%" type="default" @click="visitMode='json'">JSON模式</tc-button>
+          </el-button-group>
         </div>
       </tc-form>
     </div>
-    <div  v-if="visitMode==='json'" class="login-card">
+    <div  v-if="visitMode==='json'" class="login-card" :class="{json:visitMode==='json'}">
       <tc-form class="login-form" label-width="120px">
         <div class="title-container">
           <h3 class="title">swagger-ui</h3>
         </div>
         <div class="login-form-content">
           <tc-form-item label="json数据" style="">
-            <tc-input style="width:69%" ref="swaggerJson" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
-            <tc-button style="width:30%" type="default" @click="visitMode='json'">URL模式</tc-button>
+            <tc-input type="textarea"  :rows="15" ref="swaggerJson" v-model="swaggerJson" placeholder="swagger json" auto-complete="off"/>
           </tc-form-item>
-          <tc-button :loading="loading" type="primary" class="loginButton" @click="resolve">解析数据</tc-button>
+          <el-button-group class="loginButton">
+            <tc-button style="width:50%" :loading="loading" type="primary" @click="resolve">解析</tc-button>
+            <tc-button style="width:50%" type="default" @click="visitMode='url'">Url模式</tc-button>
+          </el-button-group>
         </div>
       </tc-form>
     </div>
@@ -39,6 +43,7 @@ export default {
     return {
       visitMode: 'url',
       swaggerPath: 'http://localhost:8002/v2/api-docs',
+      swaggerJson: null,
       loading: false
     }
   },
@@ -51,6 +56,11 @@ export default {
       })
     },
     resolve() {
+      swaggerService.resolveSwagger(this.swaggerJson).then(result => {
+        if (result.swagger !== undefined) {
+          this.$router.push({ path: '/main/index' })
+        }
+      })
     }
   }
 }
@@ -67,14 +77,23 @@ $login-card-height:250px;
 .login-card{
   position: absolute;
   width: $login-card-width;
-  height: $login-card-height;
   background-color: #fff;
   border:1px solid #333;
   border-radius: 5px;
   left: 50%;
   top: 45%;
   margin-left: -$login-card-width/2;
+  
+}
+
+.login-card.url{
+  height: $login-card-height;
   margin-top: -$login-card-height/2;
+}
+$login-card-height-json:500px;
+.login-card.json{
+  height: $login-card-height-json;
+  margin-top: -$login-card-height-json/2;
 }
 
  .title-container {

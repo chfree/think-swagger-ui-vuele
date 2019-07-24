@@ -27,8 +27,22 @@ function reqAndResolveSwagger(url) {
   })
 }
 
+function resolveSwagger(swaggerJson) {
+  const result = JSON.parse(swaggerJson)
+  return new Promise(function(resolve, reject) {
+    if (result.swagger !== undefined) {
+      store.commit('swaggerInfo', result)
+
+      const menus = resolveMenu()
+      result['menus'] = menus
+    }
+    resolve(result)
+  })
+}
+
 const swaggerService = {
   reqSwagger,
+  resolveSwagger,
   reqAndResolveSwagger
 }
 
