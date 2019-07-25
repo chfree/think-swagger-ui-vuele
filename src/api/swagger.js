@@ -28,6 +28,8 @@ function reqAndResolveSwagger(url) {
 }
 
 function resolveSwagger(swaggerJson) {
+  store.commit('swaggerPath', null)
+  window.sessionStorage.swaggerPath = null
   const result = JSON.parse(swaggerJson)
   return new Promise(function(resolve, reject) {
     if (result.swagger !== undefined) {
@@ -40,10 +42,20 @@ function resolveSwagger(swaggerJson) {
   })
 }
 
+function sendRequest(url, requestData) {
+  return new Promise(function(resolve, reject) {
+    request.get(url, requestData, response => {
+      const result = response.data
+      resolve(result)
+    })
+  })
+}
+
 const swaggerService = {
   reqSwagger,
   resolveSwagger,
-  reqAndResolveSwagger
+  reqAndResolveSwagger,
+  sendRequest
 }
 
 export default swaggerService
