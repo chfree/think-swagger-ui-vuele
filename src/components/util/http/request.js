@@ -45,11 +45,11 @@ function execRequest(httpRequest, success, error) {
   httpRequest.then(function(res) {
     success(res)
   }).catch(function(err) {
-    console.log(err)
+    console.log(err, 'err')
     if (error || error === undefined) {
-      success(err)
+      success(err.response)
     } else {
-      error(err)
+      error(err.response)
     }
   })
 }

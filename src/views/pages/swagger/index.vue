@@ -37,7 +37,12 @@
         </tc-form>
         <el-divider>响应</el-divider>
         <tc-block>
-          {{responseResult}}
+          <json-viewer v-if="responseResult"
+            :value="responseResult"
+            :expand-depth=5
+            copyable
+            boxed
+            sort></json-viewer>
         </tc-block>
       </el-tab-pane>
     </el-tabs>
@@ -48,7 +53,9 @@
 import { mapGetters } from 'vuex'
 import { isNull } from 'tennetcn-ui/lib/utils'
 import swaggerService from '@/api/swagger'
+import jsonViewer from 'vue-json-viewer'
 export default {
+  components: { jsonViewer },
   data() {
     return {
       activeName: '',
@@ -56,7 +63,7 @@ export default {
         requestProtocol: 'http://',
         contentType: null,
         requestPath: this.$route.query.path,
-        requestPathMethod: this.activeName
+        requestMethod: this.activeName
       },
       responseResult: null,
       paramColumn: [
@@ -64,14 +71,21 @@ export default {
         { text: '值', name: 'value', editable: true, type: 'input' },
         { text: '描述', name: 'description' },
         { text: '是否必填', name: 'required', width: '80' },
-        { text: '参数类型', name: 'type', width: '120' },
-        { text: '数据类型', name: 'dataType', width: '120' }
+        { text: '参数类型', name: 'in', width: '120' },
+        { text: '数据类型', name: 'type', width: '120' }
       ]
     }
   },
   mounted() {
   },
   watch: {
+    '$route.query.path': function(newVal) {
+      this.methodForm.requestPath = newVal
+      this.responseResult = null
+    },
+    'activeName': function(newVal) {
+      this.methodForm.requestMethod = newVal
+    }
   },
   computed: {
     ...mapGetters([
@@ -128,12 +142,13 @@ export default {
     },
     sendRequest() {
       const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + this.methodForm.requestPath
+      const method = this.methodForm.requestMethod
       var requestData = {}
       this.parameters.forEach(item => {
         requestData[item.name] = item.value === undefined ? null : item.value
       })
-      swaggerService.sendRequest(requestUrl, requestData).then(result => {
-        this.responseResult = result
+      swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
+        this.responseResult = result.data
       })
     }
   }
@@ -141,6 +156,10 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-
+<style lang="scss">
+.jv-node {
+  span.jv-toggle.open{
+    transform: rotate(90deg) !important;
+  }
+}
 </style>

@@ -42,11 +42,10 @@ function resolveSwagger(swaggerJson) {
   })
 }
 
-function sendRequest(url, requestData) {
+function sendRequest(method, url, requestData) {
   return new Promise(function(resolve, reject) {
-    request.get(url, requestData, response => {
-      const result = response.data
-      resolve(result)
+    request[method](url, requestData, response => {
+      resolve(response)
     })
   })
 }
