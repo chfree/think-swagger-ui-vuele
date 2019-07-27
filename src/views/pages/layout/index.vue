@@ -12,9 +12,8 @@
 import topbar from './topbar'
 import sidebar from './sidebar'
 import appMain from './app-main'
-import breadcrumb from './breadcrumb'
 export default {
-  components: {topbar, sidebar, appMain, breadcrumb},
+  components: {topbar, sidebar, appMain},
   computed: {
   },
   methods: {

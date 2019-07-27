@@ -67,6 +67,7 @@ export default {
       },
       responseResult: null,
       paramColumn: [
+        { text: '是否启用', name: 'open', width: '80', editable: true, type: 'checkbox' },
         { text: '参数', name: 'name', width: '180' },
         { text: '值', name: 'value', editable: true, type: 'input' },
         { text: '描述', name: 'description' },
@@ -132,7 +133,11 @@ export default {
       })
     },
     parameters() {
-      return this.reqMethod.parameters || []
+      const params = (this.reqMethod.parameters || [])
+      params.forEach(item => {
+        this.$set(item, 'open', true)
+      })
+      return params
     }
   },
   methods: {
@@ -145,7 +150,9 @@ export default {
       const method = this.methodForm.requestMethod
       var requestData = {}
       this.parameters.forEach(item => {
-        requestData[item.name] = item.value === undefined ? null : item.value
+        if (item.open) {
+          requestData[item.name] = item.value === undefined ? null : item.value
+        }
       })
       swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
         this.responseResult = result.data
