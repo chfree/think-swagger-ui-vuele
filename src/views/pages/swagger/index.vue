@@ -26,12 +26,19 @@
           </el-row>
           <el-row>
             <el-col>
-              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn" />
+              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
+                <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
+                  <div v-if="columnName === 'value'">
+                    <tc-input v-model="scope.row[columnName]" type="text" clearable size="mini"></tc-input>
+                  </div>
+                </template>
+              </tc-edit-table>
             </el-col>
           </el-row>
           <el-row style="margin-top:20px;text-align:center;">
             <el-col>
               <tc-button type="think" size="small" @click="sendRequest">试一试</tc-button>
+              <tc-button type="think" size="small" @click="fillData">填充数据</tc-button>
             </el-col>
           </el-row>
         </tc-form>
@@ -54,6 +61,8 @@ import { mapGetters } from 'vuex'
 import { isNull } from 'tennetcn-ui/lib/utils'
 import swaggerService from '@/api/swagger'
 import jsonViewer from 'vue-json-viewer'
+import mock from 'mockjs'
+
 export default {
   components: { jsonViewer },
   data() {
@@ -70,7 +79,7 @@ export default {
         { text: '是否启用', name: 'open', width: '80', editable: true, type: 'checkbox' },
         { text: '参数', name: 'name', width: '180' },
         { text: '值', name: 'value', editable: true, type: 'input' },
-        { text: '描述', name: 'description' },
+        { text: '描述', name: 'description', width: '180' },
         { text: '是否必填', name: 'required', width: '80' },
         { text: '参数类型', name: 'in', width: '120' },
         { text: '数据类型', name: 'type', width: '120' }
@@ -156,6 +165,17 @@ export default {
       })
       swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
         this.responseResult = result.data
+      })
+    },
+    fillData() {
+      const random = mock.Random
+      this.parameters.forEach(item => {
+        if (item.type === 'string') {
+          this.$set(item, 'value', random.word(1, 10))
+        } else if (item.type === 'integer' || item.type === 'int') {
+          this.$set(item, 'value', random.integer(1, 99))
+        }
+
       })
     }
   }
