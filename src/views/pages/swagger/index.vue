@@ -58,7 +58,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { isNull } from 'tennetcn-ui/lib/utils'
+import { isEmpty } from 'tennetcn-ui/lib/utils'
 import swaggerService from '@/api/swagger'
 import jsonViewer from 'vue-json-viewer'
 import mock from 'mockjs'
@@ -130,7 +130,7 @@ export default {
     },
     producesProviders() {
       const produces = this.reqMethod.produces
-      if (isNull(produces)) {
+      if (isEmpty(produces)) {
         return []
       }
 

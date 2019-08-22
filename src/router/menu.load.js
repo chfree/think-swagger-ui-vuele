@@ -1,5 +1,5 @@
 import store from '@/store'
-import { isNull } from 'tennetcn-ui/lib/utils'
+import { isEmpty } from 'tennetcn-ui/lib/utils'
 /*
 *{name:name,desc:desc,children:[{path:'/login',reqMethod:[]}]}
 */
@@ -15,7 +15,7 @@ const resolveMenu = function() {
     const reqMethod = paths[path]
     const firstMethod = reqMethod[Object.keys(reqMethod)[0]]
     const firstTag = firstMethod.tags[0]
-    const title = isNull(firstMethod.summary) ? path : firstMethod.summary
+    const title = isEmpty(firstMethod.summary) ? path : firstMethod.summary
     var children = []
     children.push({path: path.substr(1, path.length - 1), key: path, reqMethod: reqMethod, meta: {icon: '', title: title}, routeParam: {firstTag: firstTag, path: path}})
 

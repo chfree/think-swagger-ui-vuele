@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "tennetcn-ui": "0.0.36",
+    "tennetcn-ui": "0.0.43",
     "vue": "2.6.10",
     "vue-json-viewer": "^2.2.1",
     "vue-router": "^3.0.1",
