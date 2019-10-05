@@ -54,7 +54,7 @@ export default {
   },
   created() {
     this.host = window.location.protocol + '//' + window.location.host
-    let pathname = window.location.pathname.replace('/swagger/index.html', '')
+    let pathname = window.location.pathname.replace('/thinkswagger/index.html', '')
     if (pathname === '/') {
       pathname = ''
     }
@@ -134,9 +134,10 @@ $login-card-height-json:500px;
   color: rgb(255, 255, 255);
   position: fixed;
   bottom: 20px;
-  width: 300px;
+  width: $login-card-width;
   display: block;
   left: 50%;
-  margin-left: -150px;
+  margin-left: -$login-card-width/2;
+  text-align: center;
 }
 </style>
