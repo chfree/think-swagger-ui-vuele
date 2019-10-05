@@ -7,7 +7,7 @@
         </div>
         <div class="login-form-content">
           <tc-form-item label="swagger路径" style="margin-bottom:50px;">
-            <tc-input ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" @keyup.native.enter="login" auto-complete="off"/>
+            <tc-input v-model="swaggerPath" placeholder="swagger path" @keyup.native.enter="login" auto-complete="off"/>
           </tc-form-item>
           <el-button-group class="loginButton">
             <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>
@@ -23,7 +23,7 @@
         </div>
         <div class="login-form-content">
           <tc-form-item label="json数据" style="">
-            <tc-input type="textarea"  :rows="15" ref="swaggerJson" v-model="swaggerJson" placeholder="swagger json" auto-complete="off"/>
+            <tc-input type="textarea"  :rows="15" v-model="swaggerJson" placeholder="swagger json" auto-complete="off"/>
           </tc-form-item>
           <el-button-group class="loginButton">
             <tc-button style="width:50%" :loading="loading" type="primary" @click="resolve">解析</tc-button>
@@ -31,6 +31,9 @@
           </el-button-group>
         </div>
       </tc-form>
+    </div>
+    <div class="copyright-info">
+      think-swagger-ui-vue Powered by chfree develop
     </div>
   </div>
 </template>
@@ -42,10 +45,22 @@ export default {
   data() {
     return {
       visitMode: 'url',
-      swaggerPath: 'http://localhost:8002/v2/api-docs',
+      host: '',
+      path: '/v2/api-docs',
+      swaggerPath: '',
       swaggerJson: null,
       loading: false
     }
+  },
+  created() {
+    this.host = window.location.protocol + '//' + window.location.host
+    let pathname = window.location.pathname.replace('/swagger/index.html', '')
+    if (pathname === '/') {
+      pathname = ''
+    }
+    this.host += pathname
+
+    this.swaggerPath = this.host + this.path
   },
   methods: {
     login() {
@@ -115,4 +130,13 @@ $login-card-height-json:500px;
   }
 }
 
+.copyright-info{
+  color: rgb(255, 255, 255);
+  position: fixed;
+  bottom: 20px;
+  width: 300px;
+  display: block;
+  left: 50%;
+  margin-left: -150px;
+}
 </style>
