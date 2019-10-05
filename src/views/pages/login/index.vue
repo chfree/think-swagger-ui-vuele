@@ -33,7 +33,7 @@
       </tc-form>
     </div>
     <div class="copyright-info">
-      think-swagger-ui-vue Powered by chfree develop
+      <a href="https://github.com/chfree/think-swagger-ui-vuele" target="_blank">think-swagger-ui-vue</a> powered by <a href="https://github.com/chfree" target="_blank">chfree</a> develop
     </div>
   </div>
 </template>
