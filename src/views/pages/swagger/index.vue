@@ -26,6 +26,9 @@
           </el-row>
           <el-row>
             <el-col>
+              <div style="margin-bottom:10px;margin-top:10px;">
+                <tc-button type="think" @click="addParam" size="small">新增</tc-button>
+              </div>
               <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
@@ -39,6 +42,7 @@
             <el-col>
               <tc-button type="think" size="small" @click="sendRequest">试一试</tc-button>
               <tc-button type="think" size="small" @click="fillData">填充数据</tc-button>
+              <tc-button type="think" size="small" @click="resetData">重置</tc-button>
             </el-col>
           </el-row>
         </tc-form>
@@ -77,13 +81,23 @@ export default {
       responseResult: null,
       paramColumn: [
         { text: '是否启用', name: 'open', width: '80', editable: true, type: 'checkbox' },
-        { text: '参数', name: 'name', width: '180' },
+        { text: '参数', name: 'name', width: '180', editable: true },
         { text: '值', name: 'value', editable: true, type: 'input' },
         { text: '描述', name: 'description', width: '180' },
         { text: '是否必填', name: 'required', width: '80' },
         { text: '参数类型', name: 'in', width: '120' },
         { text: '数据类型', name: 'type', width: '120' }
-      ]
+      ],
+      customParamItem: {
+        disabled: null,
+        in: 'query',
+        name: '',
+        editable: true,
+        open: true,
+        required: false,
+        type: 'string'
+      },
+      customParam: []
     }
   },
   mounted() {
@@ -142,14 +156,18 @@ export default {
       })
     },
     parameters() {
-      const params = (this.reqMethod.parameters || [])
+      let params = (this.reqMethod.parameters || [])
       params.forEach(item => {
         this.$set(item, 'open', true)
+        this.$set(item, 'editable', false)
       })
-      return params
+      return params.concat(this.customParam)
     }
   },
   methods: {
+    addParam() {
+      this.customParam.push(Object.assign({}, this.customParamItem))
+    },
     tabName(name) {
       const reqMethod = this.menuInfo.reqMethod[name] || {}
       return reqMethod.summary + '-' + name
@@ -159,7 +177,7 @@ export default {
       const method = this.methodForm.requestMethod
       var requestData = {}
       this.parameters.forEach(item => {
-        if (item.open) {
+        if (item.open && !isEmpty(item.name)) {
           requestData[item.name] = item.value === undefined ? null : item.value
         }
       })
@@ -170,12 +188,20 @@ export default {
     fillData() {
       const random = mock.Random
       this.parameters.forEach(item => {
+        if (isEmpty(item.name)) {
+          return true
+        }
         if (item.type === 'string') {
           this.$set(item, 'value', random.word(1, 10))
         } else if (item.type === 'integer' || item.type === 'int') {
           this.$set(item, 'value', random.integer(1, 99))
         }
-
+      })
+    },
+    resetData() {
+      this.customParam = []
+      this.parameters.forEach(item => {
+        this.$set(item, 'value', '')
       })
     }
   }

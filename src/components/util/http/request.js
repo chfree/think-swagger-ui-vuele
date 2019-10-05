@@ -1,4 +1,6 @@
 import axios from 'axios'
+import store from '@/store'
+import { isEmpty } from 'tennetcn-ui/lib/utils'
 
 axios.defaults.baseURL = ''
 axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('token')
@@ -17,12 +19,24 @@ const http = axios.create({
     return newData
   }]
 })
-
+http.interceptors.request.use(setConfig)
 const httpJson = axios.create({
   headers: {
     'Content-Type': 'application/json;charset=utf-8'
   }
 })
+
+httpJson.interceptors.request.use(setConfig)
+
+function setConfig(config) {
+  const headers = [].concat(store.state.swagger.headers || [])
+  headers.forEach(item => {
+    if (item.use && !isEmpty(item.headerInfo)) {
+      config.headers[item.headerName] = item.headerInfo
+    }
+  })
+  return config
+}
 
 function apiAxios(method, url, params, success, error) {
   execRequest(http({

@@ -7,7 +7,7 @@
         </div>
         <div class="login-form-content">
           <tc-form-item label="swagger路径" style="margin-bottom:50px;">
-            <tc-input ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" auto-complete="off"/>
+            <tc-input ref="swaggerPath" v-model="swaggerPath" placeholder="swagger path" @keyup.native.enter="login" auto-complete="off"/>
           </tc-form-item>
           <el-button-group class="loginButton">
             <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>

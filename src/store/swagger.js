@@ -2,7 +2,8 @@ const swagger = {
   state: {
     info: null,
     path: null,
-    menus: null
+    menus: null,
+    headers: null
   },
   mutations: {
     swaggerPath: function(state, result) {
@@ -13,6 +14,9 @@ const swagger = {
     },
     menus: function(state, result) {
       state.menus = result
+    },
+    headers: function(state, result) {
+      state.headers = result
     }
   },
   actions: {
@@ -24,6 +28,9 @@ const swagger = {
     },
     menus({ commit }, param) {
       commit('menus', param)
+    },
+    headers({ commit }, param) {
+      commit('headers', param)
     }
   }
 }

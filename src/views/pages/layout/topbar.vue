@@ -8,24 +8,33 @@
         <a href="/#/main/index">SwaggerUI</a>
       </span>
       <div class="avatar-container">
+        <tc-button size="small" type="think" @click="openCommonSetting">通用设置</tc-button>
         <tc-button size="small" type="think" @click="openSwaggerInfo">swagger信息</tc-button>
       </div>
     </el-menu>
     <tc-dialog loading :title="swaggerInfoDialog.title" :visible.sync="swaggerInfoDialog.show" width="600px" height="400px">
-      <swaggerInfo />
+      <swagger-info />
+    </tc-dialog>
+    <tc-dialog loading :title="commonSettingDialog.title" :visible.sync="commonSettingDialog.show" width="800px" height="450px">
+      <common-setting />
     </tc-dialog>
   </div>
 </template>
 
 <script>
-import swaggerInfo from './swagger-info'
+import swaggerInfo from './swaggerInfo'
+import commonSetting from './commonSetting'
 export default {
-  components: { swaggerInfo },
+  components: { swaggerInfo, commonSetting },
   data() {
     return {
       swaggerInfoDialog: {
         show: false,
         title: 'swagger信息'
+      },
+      commonSettingDialog: {
+        show: false,
+        title: '通用设置'
       }
     }
   },
@@ -36,6 +45,9 @@ export default {
   methods: {
     openSwaggerInfo() {
       this.swaggerInfoDialog.show = true
+    },
+    openCommonSetting() {
+      this.commonSettingDialog.show = true
     }
   }
 }
