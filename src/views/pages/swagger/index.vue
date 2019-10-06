@@ -27,15 +27,23 @@
           <el-row>
             <el-col>
               <div style="margin-bottom:10px;margin-top:10px;">
-                <tc-button type="think" @click="addParam" size="small">新增</tc-button>
+                <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
               </div>
-              <tc-edit-tree-table row-key="name" editmode="multi" :data="parameters" :columns="paramColumn">
+              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
-                    <tc-input v-model="scope.row[columnName]" type="text" clearable size="mini"></tc-input>
+                    <div v-if="rowData.type === 'json'">
+                      <tc-button type="think" size="mini" @click="formatJson(value)">格式化编辑</tc-button>
+                      <tc-input :rows="8" v-model="scope.row[columnName]" type="textarea" style="margin-top:5px;" clearable size="mini"></tc-input>
+                    </div>
+                    <tc-input v-else v-model="scope.row[columnName]" type="text" clearable size="mini"></tc-input>
+                  </div>
+                  <div v-else-if="columnName === 'name'">
+                    <tc-input v-if="rowData['category'] === 'custom'" v-model="scope.row[columnName]" type="text" clearable size="mini"></tc-input>
+                    <span v-else>{{value}}</span>
                   </div>
                 </template>
-              </tc-edit-tree-table>
+              </tc-edit-table>
             </el-col>
           </el-row>
           <el-row style="margin-top:20px;text-align:center;">
@@ -57,6 +65,9 @@
         </tc-block>
       </el-tab-pane>
     </el-tabs>
+    <tc-dialog loading title="编辑json" :visible.sync="jsonEditForm.show" width="800px" height="600px">
+      <jsonedit :json="jsonEditForm.json" @save-json="saveJson"/>
+    </tc-dialog>
   </div>
 </template>
 
@@ -66,11 +77,17 @@ import { isEmpty } from 'tennetcn-ui/lib/utils'
 import swaggerService from '@/api/swagger'
 import jsonViewer from 'vue-json-viewer'
 import mock from 'mockjs'
+import jsonedit from './jsonedit'
 
 export default {
-  components: { jsonViewer },
+  components: { jsonViewer, jsonedit },
   data() {
     return {
+      jsonEditForm: {
+        show: false,
+        json: null
+      },
+      isPostJson: false,
       activeName: '',
       methodForm: {
         requestProtocol: 'http://',
@@ -80,7 +97,7 @@ export default {
       },
       responseResult: null,
       paramColumn: [
-        { text: '是否启用', name: 'open', width: '100', align: 'left', editable: true, type: 'checkbox' },
+        { text: '启用', name: 'open', width: '60', editable: true, type: 'checkbox' },
         { text: '参数', name: 'name', width: '180', editable: true },
         { text: '值', name: 'value', editable: true, type: 'input' },
         { text: '描述', name: 'description', width: '180' },
@@ -89,6 +106,7 @@ export default {
         { text: '数据类型', name: 'type', width: '120' }
       ],
       customParamItem: {
+        category: 'custom',
         disabled: null,
         in: 'query',
         name: '',
@@ -106,6 +124,7 @@ export default {
     '$route.query.path': function(newVal) {
       this.methodForm.requestPath = newVal
       this.responseResult = null
+      this.customParam = []
     },
     'activeName': function(newVal) {
       this.methodForm.requestMethod = newVal
@@ -157,51 +176,83 @@ export default {
     },
     parameters() {
       let params = (this.reqMethod.parameters || [])
+      this.isPostJson = false
       params.forEach(item => {
         this.$set(item, 'open', true)
         this.$set(item, 'editable', false)
+        if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
+          item.type = 'json'
+          this.isPostJson = true
 
-        this.calcComplexParam(item)
+          this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item)))
+        }
       })
-      console.log(params, 'params')
       return params.concat(this.customParam)
     }
   },
   methods: {
     calcComplexParam(item) {
+      var result = {}
       // 是复杂属性
       if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
         const ref = this.getDefinName(item.schema.$ref)
-        const children = []
         const refDefin = this.swaggerInfo.definitions[ref]
-        console.log(refDefin, 'refDefin')
         for (var key in refDefin.properties) {
-          const childItem = {open: true, name: key}
           const refProperty = refDefin.properties[key]
-          // 递归计算
-          this.loopCalcComplexParam(refProperty, childItem)
+          console.log(refProperty, 'refProperty')
+          if (refProperty.type === 'array') {
+            var childArr = []
+            this.loopCalcComplexParamArr(refProperty, childArr)
+            result[key] = childArr
+          } else {
+            var childObj = {}
+            // 递归计算
+            this.loopCalcComplexParam(refProperty, childObj)
 
-          children.push(childItem)
+            result[key] = this.isEmptyObject(childObj) ? '' : childObj
+          }
         }
-        this.$set(item, 'children', children)
       }
+      return result
     },
-    loopCalcComplexParam(parentRefProperty, parentItem) {
+    loopCalcComplexParam(parentRefProperty, parentObj) {
       if (!isEmpty(parentRefProperty.$ref)) {
         const ref = this.getDefinName(parentRefProperty.$ref)
-        const children = []
         const refDefin = this.swaggerInfo.definitions[ref]
 
         for (var key in refDefin.properties) {
-          const childItem = {open: true, name: key, type: refDefin.properties[key].type}
           const refProperty = refDefin.properties[key]
-          // 继续计算子级
-          this.loopCalcComplexParam(refProperty, childItem)
+          if (refProperty.type === 'array') {
+            var childArr = []
+            this.loopCalcComplexParamArr(refProperty, childArr)
+            parentObj[key] = childArr
+          } else {
+            var childObj = {}
+            // 继续计算子级
+            this.loopCalcComplexParam(refProperty, childObj)
 
-          children.push(childItem)
+            parentObj[key] = this.isEmptyObject(childObj) ? '' : childObj
+          }
         }
-        parentItem.children = children
       }
+    },
+    loopCalcComplexParamArr(parentRefProperty, parentArr) {
+      const ref = this.getDefinName(parentRefProperty.items.$ref)
+      const refDefin = this.swaggerInfo.definitions[ref]
+      var obj = {}
+      for (let key in refDefin.properties) {
+        obj[key] = ''
+      }
+      parentArr.push(obj)
+    },
+    formatJson(json) {
+      this.jsonEditForm.json = json
+      this.jsonEditForm.show = true
+    },
+    saveJson(json) {
+      console.log('json', json)
+      this.$set(this.parameters[0], 'value', JSON.stringify(json))
+      this.jsonEditForm.show = false
     },
     getDefinName(refFull) {
       return refFull.replace('#/definitions/', '')
@@ -215,13 +266,18 @@ export default {
     },
     sendRequest() {
       const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + this.methodForm.requestPath
-      const method = this.methodForm.requestMethod
+      var method = this.methodForm.requestMethod
       var requestData = {}
-      this.parameters.forEach(item => {
-        if (item.open && !isEmpty(item.name)) {
-          requestData[item.name] = item.value === undefined ? null : item.value
-        }
-      })
+      if (this.isPostJson) {
+        method = 'postJson'
+        requestData = JSON.parse(this.parameters[0].value)
+      } else {
+        this.parameters.forEach(item => {
+          if (item.open && !isEmpty(item.name)) {
+            requestData[item.name] = item.value === undefined ? null : item.value
+          }
+        })
+      }
       swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
         this.responseResult = result.data
       })
@@ -244,6 +300,13 @@ export default {
       this.parameters.forEach(item => {
         this.$set(item, 'value', '')
       })
+    },
+    isEmptyObject(e) {
+      var t
+      for (t in e) {
+        return !1
+      }
+      return !0
     }
   }
 
@@ -255,5 +318,8 @@ export default {
   span.jv-toggle.open{
     transform: rotate(90deg) !important;
   }
+}
+.jv-container .jv-code {
+  overflow: auto;
 }
 </style>
