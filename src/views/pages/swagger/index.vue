@@ -29,13 +29,13 @@
               <div style="margin-bottom:10px;margin-top:10px;">
                 <tc-button type="think" @click="addParam" size="small">新增</tc-button>
               </div>
-              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
+              <tc-edit-tree-table row-key="name" editmode="multi" :data="parameters" :columns="paramColumn">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
                     <tc-input v-model="scope.row[columnName]" type="text" clearable size="mini"></tc-input>
                   </div>
                 </template>
-              </tc-edit-table>
+              </tc-edit-tree-table>
             </el-col>
           </el-row>
           <el-row style="margin-top:20px;text-align:center;">
@@ -80,7 +80,7 @@ export default {
       },
       responseResult: null,
       paramColumn: [
-        { text: '是否启用', name: 'open', width: '80', editable: true, type: 'checkbox' },
+        { text: '是否启用', name: 'open', width: '100', align: 'left', editable: true, type: 'checkbox' },
         { text: '参数', name: 'name', width: '180', editable: true },
         { text: '值', name: 'value', editable: true, type: 'input' },
         { text: '描述', name: 'description', width: '180' },
@@ -160,11 +160,52 @@ export default {
       params.forEach(item => {
         this.$set(item, 'open', true)
         this.$set(item, 'editable', false)
+
+        this.calcComplexParam(item)
       })
+      console.log(params, 'params')
       return params.concat(this.customParam)
     }
   },
   methods: {
+    calcComplexParam(item) {
+      // 是复杂属性
+      if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
+        const ref = this.getDefinName(item.schema.$ref)
+        const children = []
+        const refDefin = this.swaggerInfo.definitions[ref]
+        console.log(refDefin, 'refDefin')
+        for (var key in refDefin.properties) {
+          const childItem = {open: true, name: key}
+          const refProperty = refDefin.properties[key]
+          // 递归计算
+          this.loopCalcComplexParam(refProperty, childItem)
+
+          children.push(childItem)
+        }
+        this.$set(item, 'children', children)
+      }
+    },
+    loopCalcComplexParam(parentRefProperty, parentItem) {
+      if (!isEmpty(parentRefProperty.$ref)) {
+        const ref = this.getDefinName(parentRefProperty.$ref)
+        const children = []
+        const refDefin = this.swaggerInfo.definitions[ref]
+
+        for (var key in refDefin.properties) {
+          const childItem = {open: true, name: key, type: refDefin.properties[key].type}
+          const refProperty = refDefin.properties[key]
+          // 继续计算子级
+          this.loopCalcComplexParam(refProperty, childItem)
+
+          children.push(childItem)
+        }
+        parentItem.children = children
+      }
+    },
+    getDefinName(refFull) {
+      return refFull.replace('#/definitions/', '')
+    },
     addParam() {
       this.customParam.push(Object.assign({}, this.customParamItem))
     },
