@@ -6,7 +6,7 @@ axios.defaults.baseURL = ''
 axios.defaults.headers.common['Authorization'] = window.sessionStorage.getItem('token')
 axios.defaults.headers.common['Access-Control-Allow-Origin'] = '*'
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8'
-axios.defaults.withCredentials = true
+axios.defaults.withCredentials = false
 
 const http = axios.create({
   transformRequest: [function(data) {

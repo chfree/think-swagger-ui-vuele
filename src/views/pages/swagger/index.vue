@@ -265,7 +265,7 @@ export default {
       return reqMethod.summary + '-' + name
     },
     sendRequest() {
-      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + this.methodForm.requestPath
+      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + this.swaggerInfo.basePath + this.methodForm.requestPath
       var method = this.methodForm.requestMethod
       var requestData = {}
       if (this.isPostJson) {
