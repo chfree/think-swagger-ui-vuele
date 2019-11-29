@@ -12,7 +12,7 @@ const http = axios.create({
   transformRequest: [function(data) {
     let newData = ''
     for (const k in data) {
-      if (data.hasOwnProperty(k) === true) {
+      if (data.hasOwnProperty(k) === true && data[k] !== null && data[k] !== undefined) {
         newData += encodeURIComponent(k) + '=' + encodeURIComponent(data[k]) + '&'
       }
     }
