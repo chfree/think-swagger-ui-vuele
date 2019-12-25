@@ -195,11 +195,11 @@ export default {
       var result = {}
       // 是复杂属性
       if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
+        console.log(item.schema, 'item.schema')
         const ref = this.getDefinName(item.schema.$ref)
         const refDefin = this.swaggerInfo.definitions[ref]
         for (var key in refDefin.properties) {
           const refProperty = refDefin.properties[key]
-          console.log(refProperty, 'refProperty')
           if (refProperty.type === 'array') {
             var childArr = []
             this.loopCalcComplexParamArr(refProperty, childArr)
@@ -237,13 +237,21 @@ export default {
       }
     },
     loopCalcComplexParamArr(parentRefProperty, parentArr) {
-      const ref = this.getDefinName(parentRefProperty.items.$ref)
-      const refDefin = this.swaggerInfo.definitions[ref]
-      var obj = {}
-      for (let key in refDefin.properties) {
-        obj[key] = ''
+      if (isEmpty(parentRefProperty.items.$ref)) {
+        if (parentRefProperty.items.type === 'string') {
+          parentArr.push('')
+        } else {
+          parentArr.push([])
+        }
+      } else {
+        const ref = this.getDefinName(parentRefProperty.items.$ref)
+        const refDefin = this.swaggerInfo.definitions[ref]
+        var obj = {}
+        for (let key in refDefin.properties) {
+          obj[key] = ''
+        }
+        parentArr.push(obj)
       }
-      parentArr.push(obj)
     },
     formatJson(json) {
       this.jsonEditForm.json = json
