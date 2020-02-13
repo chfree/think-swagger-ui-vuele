@@ -273,7 +273,8 @@ export default {
       return reqMethod.summary + '-' + name
     },
     sendRequest() {
-      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + this.swaggerInfo.basePath + this.methodForm.requestPath
+      const basePath = this.swaggerInfo.basePath === '/' ? '' : this.swaggerInfo.basePath
+      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + basePath + this.methodForm.requestPath
       var method = this.methodForm.requestMethod
       var requestData = {}
       if (this.isPostJson) {
