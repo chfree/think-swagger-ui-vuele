@@ -1,33 +1,20 @@
 <template>
   <div class="login-container">
-    <div  v-if="visitMode==='url'" class="login-card" :class="{url:visitMode==='url'}">
+    <div class="login-card" :class="{url:visitMode==='url',json:visitMode==='json'}">
       <tc-form class="login-form" label-width="120px">
         <div class="title-container">
           <h3 class="title">swagger-ui</h3>
         </div>
         <div class="login-form-content">
-          <tc-form-item label="swagger路径" style="margin-bottom:50px;">
+          <tc-form-item v-show="visitMode==='url'" label="swagger路径" style="margin-bottom:50px;">
             <tc-input v-model="swaggerPath" placeholder="swagger path" @keyup.native.enter="login" auto-complete="off"/>
           </tc-form-item>
-          <el-button-group class="loginButton">
-            <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>
-            <tc-button style="width:50%" type="default" @click="visitMode='json'">JSON模式</tc-button>
-          </el-button-group>
-        </div>
-      </tc-form>
-    </div>
-    <div  v-if="visitMode==='json'" class="login-card" :class="{json:visitMode==='json'}">
-      <tc-form class="login-form" label-width="120px">
-        <div class="title-container">
-          <h3 class="title">swagger-ui</h3>
-        </div>
-        <div class="login-form-content">
-          <tc-form-item label="json数据" style="">
+          <tc-form-item v-show="visitMode==='json'" label="json数据" style="">
             <tc-input type="textarea"  :rows="15" v-model="swaggerJson" placeholder="swagger json" auto-complete="off"/>
           </tc-form-item>
           <el-button-group class="loginButton">
-            <tc-button style="width:50%" :loading="loading" type="primary" @click="resolve">解析</tc-button>
-            <tc-button style="width:50%" type="default" @click="visitMode='url'">Url模式</tc-button>
+            <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>
+            <tc-button style="width:50%" type="default" @click="modeChange">{{modeText}}</tc-button>
           </el-button-group>
         </div>
       </tc-form>
@@ -62,7 +49,15 @@ export default {
 
     this.swaggerPath = this.host + this.path
   },
+  computed: {
+    modeText: function() {
+      return this.visitMode === 'json' ? 'url模板' : 'JSON模式'
+    }
+  },
   methods: {
+    modeChange() {
+      this.visitMode = this.visitMode === 'json' ? 'url' : 'json'
+    },
     login() {
       swaggerService.reqAndResolveSwagger(this.swaggerPath).then(result => {
         if (result.swagger !== undefined) {
