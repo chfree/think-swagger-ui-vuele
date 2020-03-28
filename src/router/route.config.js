@@ -1,6 +1,8 @@
 import login from '@/views/pages/login'
 import layoutMain from '@/views/pages/layout'
+import simpleLayout from '@/views/pages/simpleLayout'
 import main from '@/views/pages/main'
+import simpleMain from '@/views/pages/simpleMain'
 import swagger from '@/views/pages/swagger'
 
 const mainRoute = [
@@ -18,6 +20,18 @@ const mainRoute = [
         path: 'index',
         name: 'mainIndex',
         component: main
+      }
+    ]
+  },
+  {
+    path: '/simpleMain',
+    name: 'simpleMain',
+    component: simpleLayout,
+    children: [
+      {
+        path: 'index',
+        name: 'simpleMainIndex',
+        component: simpleMain
       }
     ]
   },

@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import routeConfig from './route.config'
 import { isEmpty } from 'tennetcn-ui/lib/utils'
 import swaggerService from '@/api/swagger'
+import store from '@/store'
 
 Vue.use(Router)
 
@@ -25,6 +26,8 @@ router.afterEach((to, from) => {
 function firstLoad() {
   if (router.currentRoute.path !== '/') {
     const swaggerPath = window.sessionStorage.swaggerPath
+    const theme = window.sessionStorage.theme
+    store.commit('theme', theme)
     if (isEmpty(swaggerPath)) {
       router.push({ path: '/' })
     } else {

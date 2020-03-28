@@ -5,9 +5,9 @@
       :default-active="$route.path"
       :collapse="isCollapse"
       mode="vertical"
-      background-color="#394A60"
-      text-color="#fff"
-      active-text-color="#fff"
+      :background-color="backgroundColor"
+      :text-color="textColor"
+      :active-text-color="activeTextColor"
     >
       <sidebar-item v-for="route in menus" :key="route.key" :item="route" :base-path="route.path"/>
     </el-menu>
@@ -25,9 +25,28 @@ export default {
     isCollapse() {
       return false
     },
-    ...mapGetters([
-      'menus'
-    ])
+    ...mapGetters(['menus', 'theme']),
+    backgroundColor: function() {
+      if (this.theme === 'admin') {
+        return '#394A60'
+      } else if (this.theme === 'simple') {
+        return '#fff'
+      }
+    },
+    textColor: function() {
+      if (this.theme === 'admin') {
+        return '#fff'
+      } else if (this.theme === 'simple') {
+        return '#333'
+      }
+    },
+    activeTextColor: function() {
+      if (this.theme === 'admin') {
+        return '#fff'
+      } else if (this.theme === 'simple') {
+        return '#333'
+      }
+    }
   }
 }
 </script>

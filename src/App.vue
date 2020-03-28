@@ -1,12 +1,23 @@
 <template>
-  <div id="app">
+  <div id="app" :class="appClassName">
     <router-view/>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
-  name: 'App'
+  name: 'App',
+  computed: {
+    ...mapGetters(['theme']),
+    appClassName: function() {
+      if (this.theme === 'admin') {
+        return 'main'
+      } else if (this.theme === 'simple') {
+        return 'simple'
+      }
+    }
+  }
 }
 </script>
 

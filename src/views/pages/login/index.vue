@@ -6,14 +6,17 @@
           <h3 class="title">swagger-ui</h3>
         </div>
         <div class="login-form-content">
-          <tc-form-item v-show="visitMode==='url'" label="swagger路径" style="margin-bottom:50px;">
+          <tc-form-item v-show="visitMode==='url'" label="swagger路径" style="margin-bottom:30px;">
             <tc-input v-model="swaggerPath" placeholder="swagger path" @keyup.native.enter="login" auto-complete="off"/>
           </tc-form-item>
           <tc-form-item v-show="visitMode==='json'" label="json数据" style="">
             <tc-input type="textarea"  :rows="15" v-model="swaggerJson" placeholder="swagger json" auto-complete="off"/>
           </tc-form-item>
+          <tc-form-item label="主题" style="margin-bottom:30px;">
+            <tc-radio-group v-model="theme" :providers="themeProviders" />
+          </tc-form-item>
           <el-button-group class="loginButton">
-            <tc-button style="width:50%" :loading="loading" type="primary" @click="login">访问</tc-button>
+            <tc-button style="width:50%" :loading="loading" @click="login">访问</tc-button>
             <tc-button style="width:50%" type="default" @click="modeChange">{{modeText}}</tc-button>
           </el-button-group>
         </div>
@@ -36,7 +39,9 @@ export default {
       path: '/v2/api-docs',
       swaggerPath: '',
       swaggerJson: null,
-      loading: false
+      loading: false,
+      theme: 'admin',
+      themeProviders: [{id: '1', text: 'admin', value: 'admin'}, {id: '2', text: 'simple', value: 'simple'}]
     }
   },
   created() {
@@ -59,9 +64,15 @@ export default {
       this.visitMode = this.visitMode === 'json' ? 'url' : 'json'
     },
     login() {
+      this.$store.commit('theme', this.theme)
+      window.sessionStorage.theme = this.theme
+      var path = '/main/index'
+      if (this.theme === 'simple') {
+        path = '/simpleMain/index'
+      }
       swaggerService.reqAndResolveSwagger(this.swaggerPath).then(result => {
         if (result.swagger !== undefined) {
-          this.$router.push({ path: '/main/index' })
+          this.$router.push({ path: path })
         }
       })
     },
@@ -83,7 +94,7 @@ $bg:#283443;
   height: 100vh;
 }
 $login-card-width:600px;
-$login-card-height:250px;
+$login-card-height:280px;
 .login-card{
   position: absolute;
   width: $login-card-width;
@@ -100,7 +111,7 @@ $login-card-height:250px;
   height: $login-card-height;
   margin-top: -$login-card-height/2;
 }
-$login-card-height-json:500px;
+$login-card-height-json:550px;
 .login-card.json{
   height: $login-card-height-json;
   margin-top: -$login-card-height-json/2;
