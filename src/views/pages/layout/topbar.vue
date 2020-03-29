@@ -5,7 +5,7 @@
         <img src="@/assets/logo.png" style="width:40px;height:40px;" />
       </span>
       <span class="title-font">
-        <a href="/#/main/index">SwaggerUI</a>
+        <a :href="mainIndex">SwaggerUI</a>
       </span>
       <div class="avatar-container">
         <tc-button size="small" type="think" @click="openCommonSetting">通用设置</tc-button>
@@ -24,6 +24,7 @@
 <script>
 import swaggerInfo from './swaggerInfo'
 import commonSetting from './commonSetting'
+import { mapGetters } from 'vuex'
 export default {
   components: { swaggerInfo, commonSetting },
   data() {
@@ -39,6 +40,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['theme']),
+    mainIndex: function() {
+      return this.theme === 'admin' ? '/#/main/index' : '/#/simpleMain/index'
+    }
   },
   created() {
   },

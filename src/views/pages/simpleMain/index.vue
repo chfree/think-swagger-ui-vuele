@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>simple</h1>
+    <h1>swagger ui</h1>
   </div>
 </template>
 
