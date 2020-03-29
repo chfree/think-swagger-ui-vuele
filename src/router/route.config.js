@@ -4,6 +4,7 @@ import simpleLayout from '@/views/pages/simpleLayout'
 import main from '@/views/pages/main'
 import simpleMain from '@/views/pages/simpleMain'
 import swagger from '@/views/pages/swagger'
+import simpleSwagger from '@/views/pages/simpleSwagger'
 
 const mainRoute = [
   {
@@ -44,6 +45,18 @@ const mainRoute = [
         path: 'index',
         name: 'swaggerIndex',
         component: swagger
+      }
+    ]
+  },
+  {
+    path: '/simpleSwagger',
+    name: 'simpleSwagger',
+    component: simpleLayout,
+    children: [
+      {
+        path: 'index',
+        name: 'simpleSwaggerIndex',
+        component: simpleSwagger
       }
     ]
   }

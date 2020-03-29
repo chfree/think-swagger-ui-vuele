@@ -8,7 +8,7 @@ const resolveMenu = function() {
   var menus = []
   const swaggerInfo = store.getters.swaggerInfo
   console.log(swaggerInfo, 'swaggerInfo')
-
+  const rootPath = getRootPath()
   const paths = swaggerInfo.paths
   var tagMap = {}
   Array.from(Object.keys(paths)).forEach(path => {
@@ -29,12 +29,22 @@ const resolveMenu = function() {
       child.routeParam.pindex = pindex
       child.routeParam.index = index
     })
-    const menu = Object.assign({meta: {icon: '', title: tag.name }, path: '/swagger', key: tag.name, hidden: hidden}, tag, {children: children, routeParam: {}})
+    console.log(rootPath, 'rootPath')
+    const menu = Object.assign({meta: {icon: '', title: tag.name }, path: rootPath, key: tag.name, hidden: hidden}, tag, {children: children, routeParam: {}})
     menus.push(menu)
   })
   store.commit('menus', menus)
 
   return menus
+}
+
+function getRootPath() {
+  const theme = store.getters.theme
+  if (theme === 'admin') {
+    return '/swagger'
+  } else if (theme === 'simple') {
+    return '/simpleSwagger'
+  }
 }
 
 export { resolveMenu }

@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar wrap-class="scrollbar-wrapper">
+  <el-scrollbar :wrap-class="wrapClass">
     <el-menu
       :show-timeout="200"
       :default-active="$route.path"
@@ -46,14 +46,28 @@ export default {
       } else if (this.theme === 'simple') {
         return '#333'
       }
+    },
+    wrapClass: function() {
+      return 'scrollbar-wrapper ' + this.theme
     }
   }
 }
 </script>
 <style lang="scss">
-.router-link-active{
-  li.is-active{
-    background-color: #283443 !important;
+.admin{
+  .router-link-active{
+    li.is-active{
+      background-color: #283443 !important;
+    }
   }
 }
+
+.simple{
+  .router-link-active{
+    li.is-active{
+      background-color: #ecf5ff !important;
+    }
+  }
+}
+
 </style>

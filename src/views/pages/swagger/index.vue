@@ -29,7 +29,7 @@
               <div style="margin-bottom:10px;margin-top:10px;">
                 <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
               </div>
-              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
+              <tc-edit-table editmode="multi" :data="parameters" :columns="columns">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
                     <div v-if="rowData.type === 'json'">
@@ -105,6 +105,15 @@ export default {
         { text: '参数类型', name: 'in', width: '120' },
         { text: '数据类型', name: 'type', width: '120' }
       ],
+      simpleParamColumn: [
+        { text: '启用', name: 'open', width: '50', editable: true, type: 'checkbox' },
+        { text: '参数', name: 'name', width: '120', editable: true },
+        { text: '值', name: 'value', editable: true, type: 'input' },
+        { text: '描述', name: 'description', width: '120' },
+        { text: '必填', name: 'required', width: '50' },
+        { text: '参数类型', name: 'in', width: '80' },
+        { text: '数据类型', name: 'type', width: '80' }
+      ],
       customParamItem: {
         category: 'custom',
         disabled: null,
@@ -131,9 +140,17 @@ export default {
     }
   },
   computed: {
+    columns: function() {
+      if (this.theme === 'admin') {
+        return this.paramColumn
+      } else if (this.theme === 'simple') {
+        return this.simpleParamColumn
+      }
+    },
     ...mapGetters([
       'menus',
-      'swaggerInfo'
+      'swaggerInfo',
+      'theme'
     ]),
     menuInfo() {
       if (this.menus === null) {
