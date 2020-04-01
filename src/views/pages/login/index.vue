@@ -70,16 +70,24 @@ export default {
       if (this.theme === 'simple') {
         path = '/simpleMain/index'
       }
+      console.log('this.visitMode', this.visitMode)
+      if (this.visitMode === 'url') {
+        this.resolveUrl(path)
+      } else if (this.visitMode === 'json') {
+        this.resolveJson(path)
+      }
+    },
+    resolveUrl(path) {
       swaggerService.reqAndResolveSwagger(this.swaggerPath).then(result => {
         if (result.swagger !== undefined) {
           this.$router.push({ path: path })
         }
       })
     },
-    resolve() {
+    resolveJson(path) {
       swaggerService.resolveSwagger(this.swaggerJson).then(result => {
         if (result.swagger !== undefined) {
-          this.$router.push({ path: '/main/index' })
+          this.$router.push({ path: path })
         }
       })
     }
