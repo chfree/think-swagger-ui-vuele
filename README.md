@@ -43,7 +43,7 @@ npm run build
 
 支持两种主题，一种是后端管理系统模式的主题。另外一种也是类似，中间1024px进行居中，两边留白。
 
-![swagger_login](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_login.png)
+![swagger_login](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_login.png)
 
 ## 主页
 对于我使用过的一个版本的`swagger`来说，当接口数量在`1000+`以上，会等的时间非常长，原因是他一次将所有接口数据进行解析渲染，这个就是慢的原因。
@@ -56,19 +56,19 @@ npm run build
 
 对于响应数据直接采用`json`格式化组件进行格式化展示，支持展开层级。再也不用将返回的数据在去找相关的`json`格式化工具进行格式化了。格式化控件采用的是`chenfengjw163`大神的[`vue-json-viewer`](https://github.com/chenfengjw163/vue-json-viewer)
 
-![swagger_simple](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_simple.png)
+![swagger_simple](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_simple.png)
 
-![swagger_edit_json](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_edit_json.png)
+![swagger_edit_json](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_edit_json.png)
 
-![swagger_custom_field](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_custom_field.png)
+![swagger_custom_field](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_custom_field.png)
 
-![swagger_admin](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_admin.png)
+![swagger_admin](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_admin.png)
 
 ## 设置
 在后端api请求的时候，一般都会在请求头中带一些token的验证，来进行用户标识，所以在设置中，进行了自定义请求头的设置，可以方便的设置相关的请求头,在任何一个请求都会自动带上设置的请求信息。
 
-![swagger_common_setting](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_common_setting.png)
+![swagger_common_setting](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_common_setting.png)
 
 ## swagger 信息展示
 来源于后端swagger配置的相关信息在此处进行展示
-![swagger_info](http://bedimage.tennetcn.com/tennetcn.com/images/swagger_info.png)
+![swagger_info](http://bedimage.tennetcn.com/tennetcn.com/project/swagger/swagger_info.png)
