@@ -56,6 +56,28 @@
         </tc-form>
         <el-divider>响应</el-divider>
         <tc-block>
+          <el-row>
+            <el-col :span="3">
+              请求时间
+            </el-col>
+            <el-col :span="5">
+              <span>{{responseTimeInfo.requestTime}}</span>
+            </el-col>
+            <el-col :span="3">
+              响应时间
+            </el-col>
+            <el-col :span="5">
+              <span>{{responseTimeInfo.responseTime}}</span>
+            </el-col>
+            <el-col :span="3">
+              相差毫秒
+            </el-col>
+            <el-col :span="5">
+              <span>{{responseTimeInfo.diffTime}}</span>
+            </el-col>
+          </el-row>
+        </tc-block>
+        <tc-block style="margin-top:5px;">
           <json-viewer v-if="responseResult"
             :value="responseResult"
             :expand-depth=5
@@ -124,7 +146,12 @@ export default {
         required: false,
         type: 'string'
       },
-      customParam: []
+      customParam: [],
+      responseTimeInfo: {
+        requestTime: null,
+        responseTime: null,
+        diffTime: null
+      }
     }
   },
   mounted() {
@@ -134,9 +161,11 @@ export default {
       this.methodForm.requestPath = newVal
       this.responseResult = null
       this.customParam = []
+      this.resetResponseTime()
     },
     'activeName': function(newVal) {
       this.methodForm.requestMethod = newVal
+      this.resetResponseTime()
     }
   },
   computed: {
@@ -270,6 +299,11 @@ export default {
         parentArr.push(obj)
       }
     },
+    resetResponseTime() {
+      this.responseTimeInfo.requestTime = null
+      this.responseTimeInfo.responseTime = null
+      this.responseTimeInfo.diffTime = null
+    },
     formatJson(json) {
       this.jsonEditForm.json = json
       this.jsonEditForm.show = true
@@ -304,7 +338,12 @@ export default {
           }
         })
       }
+      const reqData = new Date()
+      this.responseTimeInfo.requestTime = this.$moment.formatDateTime(reqData)
       swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
+        const respData = new Date()
+        this.responseTimeInfo.responseTime = this.$moment.formatDateTime(respData)
+        this.responseTimeInfo.diffTime = respData.getTime() - reqData.getTime()
         this.responseResult = result.data
       })
     },
@@ -327,6 +366,7 @@ export default {
         this.$set(item, 'value', '')
       })
       this.responseResult = null
+      this.resetResponseTime()
     },
     isEmptyObject(e) {
       var t
