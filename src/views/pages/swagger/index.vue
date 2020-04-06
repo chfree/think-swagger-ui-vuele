@@ -326,6 +326,7 @@ export default {
       this.parameters.forEach(item => {
         this.$set(item, 'value', '')
       })
+      this.responseResult = null
     },
     isEmptyObject(e) {
       var t
