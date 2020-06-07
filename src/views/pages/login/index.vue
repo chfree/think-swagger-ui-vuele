@@ -18,6 +18,7 @@
           <el-button-group class="loginButton">
             <tc-button style="width:50%" :loading="loading" @click="login">访问</tc-button>
             <tc-button style="width:50%" type="default" @click="modeChange">{{modeText}}</tc-button>
+            <tc-button style="width:50%" :loading="loading" @click="testDwon">test</tc-button>
           </el-button-group>
         </div>
       </tc-form>
@@ -30,6 +31,7 @@
 
 <script>
 import swaggerService from '@/api/swagger'
+import { writeFileDown, mimeType } from '@/components/util/file/down'
 
 export default {
   data() {
@@ -60,6 +62,10 @@ export default {
     }
   },
   methods: {
+    testDwon() {
+      console.log()
+      writeFileDown('## 测试 \r\n', 'test.md', {type: mimeType.md})
+    },
     modeChange() {
       this.visitMode = this.visitMode === 'json' ? 'url' : 'json'
     },
