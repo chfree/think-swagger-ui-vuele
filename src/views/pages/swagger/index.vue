@@ -29,7 +29,7 @@
               <div style="margin-bottom:10px;margin-top:10px;">
                 <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
               </div>
-              <tc-edit-table editmode="multi" :data="parameters" :columns="columns">
+              <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
                     <div v-if="rowData.type === 'json'">
@@ -105,6 +105,23 @@ export default {
   components: { jsonViewer, jsonedit },
   data() {
     return {
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }],
       jsonEditForm: {
         show: false,
         json: null

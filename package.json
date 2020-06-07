@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "axios": "0.18.0",
-    "tennetcn-ui": "0.0.63",
+    "tennetcn-ui": "0.0.70",
     "vue": "2.6.10",
     "vue-json-viewer": "^2.2.1",
     "vue-router": "^3.0.1",
@@ -51,7 +51,7 @@
     "mini-css-extract-plugin": "0.4.1",
     "mockjs": "^1.0.1-beta3",
     "node-notifier": "5.2.1",
-    "node-sass": "^4.7.2",
+    "node-sass": "^4.14.1",
     "optimize-css-assets-webpack-plugin": "5.0.0",
     "ora": "3.0.0",
     "portfinder": "1.0.16",
