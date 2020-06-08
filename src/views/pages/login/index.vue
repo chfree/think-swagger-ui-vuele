@@ -18,7 +18,6 @@
           <el-button-group class="loginButton">
             <tc-button style="width:50%" :loading="loading" @click="login">访问</tc-button>
             <tc-button style="width:50%" type="default" @click="modeChange">{{modeText}}</tc-button>
-            <tc-button style="width:50%" :loading="loading" @click="testDwon">test</tc-button>
           </el-button-group>
         </div>
       </tc-form>

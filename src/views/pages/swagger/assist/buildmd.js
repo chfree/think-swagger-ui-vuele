@@ -17,7 +17,7 @@ export default {
 
       arrMds.push('## 响应参数')
 
-      return arrMds.join('<br/>')
+      return arrMds.join('\r\n')
     }
   }
 }

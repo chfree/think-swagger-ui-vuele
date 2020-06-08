@@ -30,12 +30,7 @@
                 <el-col :span="12">
                   <div style="margin-bottom:10px;margin-top:10px;">
                     <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
-                  </div>
-                </el-col>
-                <el-col :span="12" style="text-align:right;">
-                  <div style="margin-bottom:10px;margin-top:10px;">
                     <tc-button type="think" @click="selMdShow" size="small">查看md</tc-button>
-                    <tc-button type="think" size="small">下载md</tc-button>
                   </div>
                 </el-col>
               </el-row>
@@ -100,7 +95,7 @@
     <tc-dialog loading title="编辑json" :visible.sync="jsonEditForm.show" width="800px" height="600px">
       <jsonedit :json="jsonEditForm.json" @save-json="saveJson"/>
     </tc-dialog>
-    <tc-dialog loading title="查看md" :visible.sync="mdShowForm.show" width="800px" height="600px">
+    <tc-dialog loading title="查看md" :visible.sync="mdShowForm.show" width="90%" height="90%">
       <md-show :mdContent="mdShowForm.content" />
     </tc-dialog>
   </div>

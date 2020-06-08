@@ -18,6 +18,7 @@
     "tennetcn-ui": "0.0.70",
     "vue": "2.6.10",
     "vue-json-viewer": "^2.2.1",
+    "vue-meditor": "^2.1.1",
     "vue-router": "^3.0.1",
     "vuex": "^3.1.1"
   },

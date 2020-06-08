@@ -1,13 +1,28 @@
 <template>
-  <div contenteditable="true" style="width:100%;height:550px;border:1px solid #ddd;outline:none;">
-    <div v-html="mdContent"></div>
+  <div>
+    <Markdown v-model="content" />
   </div>
 </template>
 
 <script>
+import Markdown from 'vue-meditor'
 export default {
+  components: {Markdown},
   props: {
     mdContent: {type: String, required: false, default: ''}
+  },
+  data() {
+    return {
+      content: null
+    }
+  },
+  created() {
+    this.content = this.mdContent
+  },
+  watch: {
+    'mdContent': function(newVal) {
+      this.content = newVal
+    }
   }
 }
 </script>
