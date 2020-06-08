@@ -26,9 +26,19 @@
           </el-row>
           <el-row>
             <el-col>
-              <div style="margin-bottom:10px;margin-top:10px;">
-                <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
-              </div>
+              <el-row>
+                <el-col :span="12">
+                  <div style="margin-bottom:10px;margin-top:10px;">
+                    <tc-button v-if="!isPostJson" type="think" @click="addParam" size="small">新增</tc-button>
+                  </div>
+                </el-col>
+                <el-col :span="12" style="text-align:right;">
+                  <div style="margin-bottom:10px;margin-top:10px;">
+                    <tc-button type="think" @click="selMdShow" size="small">查看md</tc-button>
+                    <tc-button type="think" size="small">下载md</tc-button>
+                  </div>
+                </el-col>
+              </el-row>
               <tc-edit-table editmode="multi" :data="parameters" :columns="paramColumn">
                 <template slot="editable" slot-scope="{ value, columnName, rowData, column, scope }"> 
                   <div v-if="columnName === 'value'">
@@ -90,85 +100,38 @@
     <tc-dialog loading title="编辑json" :visible.sync="jsonEditForm.show" width="800px" height="600px">
       <jsonedit :json="jsonEditForm.json" @save-json="saveJson"/>
     </tc-dialog>
+    <tc-dialog loading title="查看md" :visible.sync="mdShowForm.show" width="800px" height="600px">
+      <md-show :mdContent="mdShowForm.content" />
+    </tc-dialog>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
 import { isEmpty } from 'tennetcn-ui/lib/utils'
+import { mapGetters } from 'vuex'
+import mock from 'mockjs'
 import swaggerService from '@/api/swagger'
 import jsonViewer from 'vue-json-viewer'
-import mock from 'mockjs'
 import jsonedit from './jsonedit'
+import swaggerHelper from './assist/swagger.helper'
+import buildmd from './assist/buildmd'
+import mdShow from './mdShow'
 
 export default {
-  components: { jsonViewer, jsonedit },
+  mixins: [swaggerHelper, buildmd],
+  components: { jsonViewer, jsonedit, mdShow },
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }],
       jsonEditForm: {
         show: false,
         json: null
       },
+      mdShowForm: {
+        show: false,
+        content: null
+      },
       isPostJson: false,
-      activeName: '',
-      methodForm: {
-        requestProtocol: 'http://',
-        contentType: null,
-        requestPath: this.$route.query.path,
-        requestMethod: this.activeName
-      },
-      responseResult: null,
-      paramColumn: [
-        { text: '启用', name: 'open', width: '60', editable: true, type: 'checkbox' },
-        { text: '参数', name: 'name', width: '180', editable: true },
-        { text: '值', name: 'value', editable: true, type: 'input' },
-        { text: '描述', name: 'description', width: '180' },
-        { text: '是否必填', name: 'required', width: '80' },
-        { text: '参数类型', name: 'in', width: '120' },
-        { text: '数据类型', name: 'type', width: '120' }
-      ],
-      simpleParamColumn: [
-        { text: '启用', name: 'open', width: '50', editable: true, type: 'checkbox' },
-        { text: '参数', name: 'name', width: '120', editable: true },
-        { text: '值', name: 'value', editable: true, type: 'input' },
-        { text: '描述', name: 'description', width: '120' },
-        { text: '必填', name: 'required', width: '50' },
-        { text: '参数类型', name: 'in', width: '80' },
-        { text: '数据类型', name: 'type', width: '80' }
-      ],
-      customParamItem: {
-        category: 'custom',
-        disabled: null,
-        in: 'query',
-        name: '',
-        editable: true,
-        open: true,
-        required: false,
-        type: 'string'
-      },
-      customParam: [],
-      responseTimeInfo: {
-        requestTime: null,
-        responseTime: null,
-        diffTime: null
-      }
+      activeName: ''
     }
   },
   mounted() {
@@ -186,135 +149,16 @@ export default {
     }
   },
   computed: {
-    columns: function() {
-      if (this.theme === 'admin') {
-        return this.paramColumn
-      } else if (this.theme === 'simple') {
-        return this.simpleParamColumn
-      }
-    },
     ...mapGetters([
       'menus',
       'swaggerInfo',
       'theme'
-    ]),
-    menuInfo() {
-      if (this.menus === null) {
-        return null
-      }
-      const parentMenu = this.menus[this.$route.query.pindex]
-      if (parentMenu === null) {
-        return null
-      }
-      return parentMenu.children[this.$route.query.index]
-    },
-    tabs() {
-      if (this.menuInfo === null) {
-        return []
-      }
-      const reqMethod = this.menuInfo.reqMethod
-      const tabs = Object.keys(reqMethod)
-
-      this.activeName = tabs[0]
-      return tabs
-    },
-    reqMethod() {
-      if (this.menuInfo === null) {
-        return {}
-      }
-      return this.menuInfo.reqMethod[this.activeName] || {}
-    },
-    producesProviders() {
-      const produces = this.reqMethod.produces
-      if (isEmpty(produces)) {
-        return []
-      }
-
-      return produces.map((item, index) => {
-        if (index === 0) {
-          this.methodForm.contentType = item
-        }
-        return { text: item, value: item, id: index }
-      })
-    },
-    parameters() {
-      let params = (this.reqMethod.parameters || [])
-      this.isPostJson = false
-      params.forEach(item => {
-        this.$set(item, 'open', true)
-        this.$set(item, 'editable', false)
-        if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
-          item.type = 'json'
-          this.isPostJson = true
-
-          this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item)))
-        }
-      })
-      return params.concat(this.customParam)
-    }
+    ])
   },
   methods: {
-    calcComplexParam(item) {
-      var result = {}
-      // 是复杂属性
-      if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
-        console.log(item.schema, 'item.schema')
-        const ref = this.getDefinName(item.schema.$ref)
-        const refDefin = this.swaggerInfo.definitions[ref]
-        for (var key in refDefin.properties) {
-          const refProperty = refDefin.properties[key]
-          if (refProperty.type === 'array') {
-            var childArr = []
-            this.loopCalcComplexParamArr(refProperty, childArr)
-            result[key] = childArr
-          } else {
-            var childObj = {}
-            // 递归计算
-            this.loopCalcComplexParam(refProperty, childObj)
-
-            result[key] = this.isEmptyObject(childObj) ? '' : childObj
-          }
-        }
-      }
-      return result
-    },
-    loopCalcComplexParam(parentRefProperty, parentObj) {
-      if (!isEmpty(parentRefProperty.$ref)) {
-        const ref = this.getDefinName(parentRefProperty.$ref)
-        const refDefin = this.swaggerInfo.definitions[ref]
-
-        for (var key in refDefin.properties) {
-          const refProperty = refDefin.properties[key]
-          if (refProperty.type === 'array') {
-            var childArr = []
-            this.loopCalcComplexParamArr(refProperty, childArr)
-            parentObj[key] = childArr
-          } else {
-            var childObj = {}
-            // 继续计算子级
-            this.loopCalcComplexParam(refProperty, childObj)
-
-            parentObj[key] = this.isEmptyObject(childObj) ? '' : childObj
-          }
-        }
-      }
-    },
-    loopCalcComplexParamArr(parentRefProperty, parentArr) {
-      if (isEmpty(parentRefProperty.items.$ref)) {
-        if (parentRefProperty.items.type === 'string') {
-          parentArr.push('')
-        } else {
-          parentArr.push([])
-        }
-      } else {
-        const ref = this.getDefinName(parentRefProperty.items.$ref)
-        const refDefin = this.swaggerInfo.definitions[ref]
-        var obj = {}
-        for (let key in refDefin.properties) {
-          obj[key] = ''
-        }
-        parentArr.push(obj)
-      }
+    selMdShow() {
+      this.mdShowForm.show = true
+      this.mdShowForm.content = this.buildMd()
     },
     resetResponseTime() {
       this.responseTimeInfo.requestTime = null
@@ -330,15 +174,8 @@ export default {
       this.$set(this.parameters[0], 'value', JSON.stringify(json))
       this.jsonEditForm.show = false
     },
-    getDefinName(refFull) {
-      return refFull.replace('#/definitions/', '')
-    },
     addParam() {
       this.customParam.push(Object.assign({}, this.customParamItem))
-    },
-    tabName(name) {
-      const reqMethod = this.menuInfo.reqMethod[name] || {}
-      return reqMethod.summary + '-' + name
     },
     sendRequest() {
       const basePath = this.swaggerInfo.basePath === '/' ? '' : this.swaggerInfo.basePath
@@ -384,16 +221,8 @@ export default {
       })
       this.responseResult = null
       this.resetResponseTime()
-    },
-    isEmptyObject(e) {
-      var t
-      for (t in e) {
-        return !1
-      }
-      return !0
     }
   }
-
 }
 </script>
 
