@@ -36,7 +36,7 @@ export default {
       this.editor.set(JSON.parse(this.json))
 
       // get json
-      // const updatedJson = editor.get()
+      // const updatedJson = this.editor.get()
       // console.log(updatedJson)
     },
     saveJson() {

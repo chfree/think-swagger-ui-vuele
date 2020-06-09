@@ -18,7 +18,7 @@ export default {
       arrMds.push('## 请求参数')
       if (this.isPostJson) {
         arrMds.push('```')
-        arrMds.push(this.parameters[0].value)
+        arrMds.push(JSON.stringify(JSON.parse(this.parameters[0].value), null, '\t'))
         arrMds.push('```')
       } else {
         arrMds.push('| 名称 | 描述 | 是否必填 | 参数类型 | 数据类型 |')

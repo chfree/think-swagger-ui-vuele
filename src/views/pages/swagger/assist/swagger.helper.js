@@ -101,8 +101,7 @@ export default {
         if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
           item.type = 'json'
           this.isPostJson = true
-
-          this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item)))
+          this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item), null, '  '))
         }
       })
       return params.concat(this.customParam)
