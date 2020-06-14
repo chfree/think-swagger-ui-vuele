@@ -36,7 +36,15 @@ npm run build
 此jar包的开源项目为[`think-free-base`](https://github.com/chfree/think-free-base/tree/master/think-swagger-ui-starter)中的子项目模块
 
 
+# V1.1.0
+## 更新功能点
+- 加入了请求响应的时间差
+- 可以将某个api的请求响应信息以md的模式查看和导出
+- 优化了部分显示内容
 
+
+
+# V1.0.0
 
 ## 登陆
 登陆界面分为`json`模式和`swagger`请求地址访问，没多大区别，只有拿到标准的`swagger`的`json`数据即可。
