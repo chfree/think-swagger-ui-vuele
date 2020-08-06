@@ -102,37 +102,27 @@ export default {
           item.type = 'json'
           this.isPostJson = true
           this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item), null, '  '))
+          // schema description
+          item.schemaDescription = this.calcComplexParamDescription(item)
         }
       })
       return params.concat(this.customParam)
     }
   },
   methods: {
-    calcComplexParam(item) {
+    calcComplexParamDescription(item) {
+      return this.calcComplexParam(item, true)
+    },
+    calcComplexParam(item, isDesc) {
       var result = {}
-      // 是复杂属性
-      if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
-        console.log(item.schema, 'item.schema')
-        const ref = this.getDefinName(item.schema.$ref)
-        const refDefin = this.swaggerInfo.definitions[ref]
-        for (var key in refDefin.properties) {
-          const refProperty = refDefin.properties[key]
-          if (refProperty.type === 'array') {
-            var childArr = []
-            this.loopCalcComplexParamArr(refProperty, childArr)
-            result[key] = childArr
-          } else {
-            var childObj = {}
-            // 递归计算
-            this.loopCalcComplexParam(refProperty, childObj)
-
-            result[key] = isEmptyObject(childObj) ? '' : childObj
-          }
-        }
+      // 不是复杂属性
+      if (isEmpty(item.schema) || isEmpty(item.schema.$ref)) {
+        return result
       }
+      this.loopCalcComplexParam(item.schema, result, isDesc)
       return result
     },
-    loopCalcComplexParam(parentRefProperty, parentObj) {
+    loopCalcComplexParam(parentRefProperty, parentObj, isDesc) {
       if (!isEmpty(parentRefProperty.$ref)) {
         const ref = this.getDefinName(parentRefProperty.$ref)
         const refDefin = this.swaggerInfo.definitions[ref]
@@ -141,19 +131,35 @@ export default {
           const refProperty = refDefin.properties[key]
           if (refProperty.type === 'array') {
             var childArr = []
-            this.loopCalcComplexParamArr(refProperty, childArr)
-            parentObj[key] = childArr
+            this.loopCalcComplexParamArr(refProperty, childArr, isDesc)
+            if (isDesc) {
+              if (isEmpty(refProperty.items.$ref)) {
+                parentObj[key] = [refProperty.description + '(' + refProperty.items.type + ')']
+              } else {
+                parentObj[key] = childArr
+              }
+            } else {
+              parentObj[key] = childArr
+            }
           } else {
             var childObj = {}
             // 继续计算子级
-            this.loopCalcComplexParam(refProperty, childObj)
+            this.loopCalcComplexParam(refProperty, childObj, isDesc)
+            if (isDesc) {
+              if (isEmpty(refProperty.type)) {
+                parentObj[key] = childObj
+              } else {
+                parentObj[key] = refProperty.description + '(' + refProperty.type + ')'
+              }
+            } else {
+              parentObj[key] = isEmptyObject(childObj) ? (refProperty.type === 'integer' ? 0 : '') : childObj
+            }
 
-            parentObj[key] = isEmptyObject(childObj) ? '' : childObj
           }
         }
       }
     },
-    loopCalcComplexParamArr(parentRefProperty, parentArr) {
+    loopCalcComplexParamArr(parentRefProperty, parentArr, isDesc) {
       if (isEmpty(parentRefProperty.items.$ref)) {
         if (parentRefProperty.items.type === 'string') {
           parentArr.push('')
@@ -161,13 +167,11 @@ export default {
           parentArr.push([])
         }
       } else {
-        const ref = this.getDefinName(parentRefProperty.items.$ref)
-        const refDefin = this.swaggerInfo.definitions[ref]
-        var obj = {}
-        for (let key in refDefin.properties) {
-          obj[key] = ''
-        }
-        parentArr.push(obj)
+        var childObj = {}
+        // 继续计算子级
+        this.loopCalcComplexParam(parentRefProperty.items, childObj, isDesc)
+
+        parentArr.push(childObj)
       }
     },
     getDefinName(refFull) {

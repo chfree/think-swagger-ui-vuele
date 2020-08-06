@@ -47,7 +47,8 @@ export default {
       'swaggerInfo'
     ]),
     contactUrl() {
-      const url = this.swaggerInfo.info.contact.url
+      console.log(this.swaggerInfo.info, 'this.swaggerInfo.info')
+      const url = this.swaggerInfo.info.contact.url || ''
       return url.indexOf('http') === 0 ? url : 'http://' + url
     }
   }

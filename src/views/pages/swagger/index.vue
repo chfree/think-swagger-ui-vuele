@@ -48,6 +48,18 @@
                     <span v-else>{{value}}</span>
                   </div>
                 </template>
+                <template slot-scope="{ value, columnName, rowData, column, scope }"> 
+                  <div v-if="columnName === 'description'">
+                    <span v-if="rowData.type === 'json'">
+                      <span>
+                        <tc-button type="text" @click="openReqJsonView(rowData)">{{value}}</tc-button>
+                      </span>
+                    </span>
+                    <span v-else>
+                      {{value}}
+                    </span>
+                  </div>
+                </template>
               </tc-edit-table>
             </el-col>
           </el-row>
@@ -98,6 +110,9 @@
     <tc-dialog loading title="查看md" :visible.sync="mdShowForm.show" width="90%" height="90%">
       <md-show :mdContent="mdShowForm.content" />
     </tc-dialog>
+     <tc-dialog loading title="查看请求" :visible.sync="reqJsonView.show" width="800px" height="600px">
+      <req-json-view :json="reqJsonView.json" />
+    </tc-dialog>
   </div>
 </template>
 
@@ -111,10 +126,11 @@ import jsonedit from './jsonedit'
 import swaggerHelper from './assist/swagger.helper'
 import buildmd from './assist/buildmd'
 import mdShow from './mdShow'
+import reqJsonView from './reqJsonView'
 
 export default {
   mixins: [swaggerHelper, buildmd],
-  components: { jsonViewer, jsonedit, mdShow },
+  components: { jsonViewer, jsonedit, mdShow, reqJsonView },
   data() {
     return {
       jsonEditForm: {
@@ -124,6 +140,10 @@ export default {
       mdShowForm: {
         show: false,
         content: null
+      },
+      reqJsonView: {
+        show: false,
+        json: null
       },
       isPostJson: false,
       activeName: ''
@@ -151,6 +171,11 @@ export default {
     ])
   },
   methods: {
+    openReqJsonView(rowData) {
+      console.log(rowData, 'rowDatarowData')
+      this.reqJsonView.show = true
+      this.reqJsonView.json = rowData.schemaDescription
+    },
     selMdShow() {
       this.mdShowForm.show = true
       this.mdShowForm.content = this.buildMd()
