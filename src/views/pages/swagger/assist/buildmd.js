@@ -29,7 +29,15 @@ export default {
       }
 
       arrMds.push('\r\n## 响应参数')
-
+      if (this.responseResult) {
+        try {
+          arrMds.push('```')
+          arrMds.push(JSON.stringify(this.responseResult, null, '  '))
+          arrMds.push('```')
+        } catch (err) {
+          console.log(err)
+        }
+      }
       return arrMds.join('\r\n')
     }
   }
