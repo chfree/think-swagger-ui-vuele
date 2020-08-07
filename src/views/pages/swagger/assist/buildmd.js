@@ -1,3 +1,4 @@
+import { isEmptyObject } from 'tennetcn-ui/lib/utils'
 export default {
   data() {
     return {
@@ -31,11 +32,20 @@ export default {
         })
       }
 
-      arrMds.push('\r\n## 响应参数')
-      if (this.responseResult) {
+      arrMds.push('\r\n## 响应数据')
+      const respJson = this.calcComplexParamResp()
+      if (isEmptyObject(respJson)) {
         try {
           arrMds.push('```')
           arrMds.push(JSON.stringify(this.responseResult, null, '  '))
+          arrMds.push('```')
+        } catch (err) {
+          console.log(err)
+        }
+      } else {
+        try {
+          arrMds.push('```')
+          arrMds.push(JSON.stringify(respJson, null, '  '))
           arrMds.push('```')
         } catch (err) {
           console.log(err)

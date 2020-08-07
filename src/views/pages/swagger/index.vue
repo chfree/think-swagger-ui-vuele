@@ -217,6 +217,7 @@ export default {
       this.customParam.push(Object.assign({}, this.customParamItem))
     },
     sendRequest() {
+      this.respActiveName = 'resp'
       const basePath = this.swaggerInfo.basePath === '/' ? '' : this.swaggerInfo.basePath
       const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + basePath + this.methodForm.requestPath
       var method = this.methodForm.requestMethod
