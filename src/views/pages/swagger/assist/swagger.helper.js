@@ -8,7 +8,7 @@ export default {
         requestPath: this.$route.query.path,
         requestMethod: this.activeName
       },
-      responseResult: null,
+      responseResult: {},
       paramColumn: [
         { text: '启用', name: 'open', width: '60', editable: true, type: 'checkbox' },
         { text: '参数', name: 'name', width: '180', editable: true },
@@ -101,7 +101,9 @@ export default {
         if (!isEmpty(item.schema) && !isEmpty(item.schema.$ref)) {
           item.type = 'json'
           this.isPostJson = true
-          this.$set(item, 'value', JSON.stringify(this.calcComplexParam(item), null, '  '))
+          const value = JSON.stringify(this.calcComplexParam(item), null, '  ')
+          this.$set(item, 'value', value)
+          this.$set(item, 'defaultValue', value)
           // schema description
           item.schemaDescription = this.calcComplexParamDescription(item)
         }
@@ -112,6 +114,10 @@ export default {
   methods: {
     calcComplexParamDescription(item) {
       return this.calcComplexParam(item, true)
+    },
+    calcComplexParamResp() {
+      const resps = this.menuInfo.reqMethod[this.activeName].responses
+      return this.calcComplexParam(resps['200'], true)
     },
     calcComplexParam(item, isDesc) {
       var result = {}

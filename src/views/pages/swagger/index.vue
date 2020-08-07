@@ -94,14 +94,24 @@
             </el-col>
           </el-row>
         </tc-block>
-        <tc-block style="margin-top:5px;">
-          <json-viewer v-if="responseResult"
-            :value="responseResult"
-            :expand-depth=5
-            copyable
-            boxed
-            sort></json-viewer>
-        </tc-block>
+        <el-tabs v-model="respActiveName">
+          <el-tab-pane label="响应数据" name="resp">
+              <json-viewer v-if="responseResult"
+                :value="responseResult"
+                :expand-depth=5
+                copyable
+                boxed
+                sort></json-viewer>
+          </el-tab-pane>
+          <el-tab-pane label="示例描述" name="respDesc">
+            <json-viewer v-if="respJson"
+                :value="respJson"
+                :expand-depth=5
+                copyable
+                boxed
+                sort></json-viewer>
+          </el-tab-pane>
+        </el-tabs>
       </el-tab-pane>
     </el-tabs>
     <tc-dialog loading title="编辑json" :visible.sync="jsonEditForm.show" width="800px" height="600px">
@@ -133,6 +143,7 @@ export default {
   components: { jsonViewer, jsonedit, mdShow, reqJsonView },
   data() {
     return {
+      respActiveName: 'resp',
       jsonEditForm: {
         show: false,
         json: null
@@ -146,7 +157,8 @@ export default {
         json: null
       },
       isPostJson: false,
-      activeName: ''
+      activeName: '',
+      respJson: {}
     }
   },
   mounted() {
@@ -154,13 +166,21 @@ export default {
   watch: {
     '$route.query.path': function(newVal) {
       this.methodForm.requestPath = newVal
-      this.responseResult = null
+      this.responseResult = {}
       this.customParam = []
+      this.respActiveName = 'resp'
       this.resetResponseTime()
     },
     'activeName': function(newVal) {
       this.methodForm.requestMethod = newVal
+      this.respActiveName = 'resp'
       this.resetResponseTime()
+    },
+    'respActiveName': function(newVal) {
+      this.respJson = {}
+      if (newVal === 'respDesc') {
+        this.respJson = this.calcComplexParamResp()
+      }
     }
   },
   computed: {
@@ -236,9 +256,9 @@ export default {
     resetData() {
       this.customParam = []
       this.parameters.forEach(item => {
-        this.$set(item, 'value', '')
+        this.$set(item, 'value', item.defaultValue)
       })
-      this.responseResult = null
+      this.responseResult = {}
       this.resetResponseTime()
     }
   }
