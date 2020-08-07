@@ -6,19 +6,22 @@ export default {
   methods: {
     buildMd: function() {
       let arrMds = []
-
+      const basePath = this.swaggerInfo.basePath === '/' ? '' : this.swaggerInfo.basePath
+      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + basePath
       const reqMethod = this.menuInfo.reqMethod[this.activeName] || {}
       arrMds.push('# ' + reqMethod.summary)
       arrMds.push('## 请求头')
       arrMds.push('| 名称 | 描述 |')
       arrMds.push('| --- | --- |')
-      arrMds.push('| 请求地址 | ' + this.methodForm.requestPath + ' |')
-      arrMds.push('| 请求方式 | ' + this.activeName + ' |')
-      arrMds.push('| 响应Content-Type | ' + this.methodForm.contentType + ' |\r\n')
+      arrMds.push('| Host | `' + requestUrl + '` |')
+      arrMds.push('| 请求地址 | `' + this.methodForm.requestPath + '` |')
+      arrMds.push('| 请求方式 | `' + this.activeName + '` |')
+      arrMds.push('| 响应Content-Type | `' + this.methodForm.contentType + '` |\r\n')
       arrMds.push('## 请求参数')
       if (this.isPostJson) {
         arrMds.push('```')
-        arrMds.push(JSON.stringify(JSON.parse(this.parameters[0].value), null, '\t'))
+        console.log(this.parameters[0], 'xxxx')
+        arrMds.push(JSON.stringify(this.parameters[0].schemaDescription, null, '\t'))
         arrMds.push('```')
       } else {
         arrMds.push('| 名称 | 描述 | 是否必填 | 参数类型 | 数据类型 |')

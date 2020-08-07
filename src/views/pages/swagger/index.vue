@@ -172,7 +172,6 @@ export default {
   },
   methods: {
     openReqJsonView(rowData) {
-      console.log(rowData, 'rowDatarowData')
       this.reqJsonView.show = true
       this.reqJsonView.json = rowData.schemaDescription
     },
