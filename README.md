@@ -30,11 +30,15 @@ npm run build
 <dependency>
   <groupId>com.tennetcn.free</groupId>
   <artifactId>think-swagger-ui-starter</artifactId>
-  <version>0.0.4</version>
+  <version>0.0.5</version>
 </dependency>
 ```
 此jar包的开源项目为[`think-free-base`](https://github.com/chfree/think-free-base/tree/master/think-swagger-ui-starter)中的子项目模块
 
+# V1.1.1
+## 更新功能点
+- 显示`application/json`模式请求的参数描述
+- 显示了响应示例描述
 
 # V1.1.0
 ## 更新功能点
