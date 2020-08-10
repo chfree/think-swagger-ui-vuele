@@ -219,7 +219,7 @@ export default {
     sendRequest() {
       this.respActiveName = 'resp'
       const basePath = this.swaggerInfo.basePath === '/' ? '' : this.swaggerInfo.basePath
-      const requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + basePath + this.methodForm.requestPath
+      let requestUrl = this.methodForm.requestProtocol + this.swaggerInfo.host + basePath + this.methodForm.requestPath
       var method = this.methodForm.requestMethod
       var requestData = {}
       if (this.isPostJson) {
@@ -234,12 +234,23 @@ export default {
       }
       const reqData = new Date()
       this.responseTimeInfo.requestTime = this.$moment.formatDateTime(reqData)
+      requestUrl = this.urlFormat(requestUrl, requestData)
       swaggerService.sendRequest(method, requestUrl, requestData).then(result => {
         const respData = new Date()
         this.responseTimeInfo.responseTime = this.$moment.formatDateTime(respData)
         this.responseTimeInfo.diffTime = respData.getTime() - reqData.getTime()
         this.responseResult = result.data
       })
+    },
+    urlFormat(url, params) {
+      if (!new RegExp('\\{(.*?)\\}').test(url)) {
+        return url
+      }
+      const pathVars = url.match(new RegExp('\\{(.*?)\\}', 'g'))
+      for (var key of pathVars) {
+        url = url.replace(new RegExp(key, 'g'), params[key.match(/{(.*?)}/)[1]])
+      }
+      return url
     },
     fillData() {
       const random = mock.Random
