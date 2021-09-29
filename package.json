@@ -48,7 +48,7 @@
     "file-loader": "1.1.11",
     "friendly-errors-webpack-plugin": "1.7.0",
     "html-webpack-plugin": "4.0.0-alpha",
-    "jsoneditor": "^7.0.4",
+    "jsoneditor": "^9.5.6",
     "mini-css-extract-plugin": "0.4.1",
     "mockjs": "^1.0.1-beta3",
     "node-notifier": "5.2.1",
